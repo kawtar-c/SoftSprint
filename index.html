@@ -8,7 +8,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <!-- CSS esterno -->
+  <!-- CSS  -->
  <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,11 +20,11 @@
       <div class="logo">Ristorante Softsprint</div>
       <nav class="nav-links">
         <a href="#chi-siamo">Chi siamo</a>
-        <a href="#menu">Menu</a>
+        <a href="#menu">Specialità</a>
         <a href="#punti-forza">Perché noi</a>
         <a href="#contatti">Contatti</a>
       </nav>
-      <a href="#contatti" class="nav-cta">Prenota un tavolo</a>
+      <a href="login.html" class="nav-cta">login</a>
     </div>
   </header>
 
@@ -41,14 +41,15 @@
             Un ristorante a conduzione familiare dove ogni piatto racconta una storia,
             preparato con ingredienti freschi e ricette tramandate da generazioni.
           </p>
-          <div class="hero-buttons">
-            <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
-              Guarda il menu
-            </button>
-            <button class="btn-secondary" onclick="document.getElementById('contatti').scrollIntoView({behavior:'smooth'})">
-              Prenota un tavolo
-            </button>
+          <div class=""hero-buttons">
+          <button class="btn-primary" onclick="window.location.href='menu.html'">
+  Guarda il menu
+</button>
+           <button class="btn-secondary" onclick="window.location.href='login.html'">
+  Prenota un tavolo
+</button>
           </div>
+          <br>
           <p class="hero-info">
             <span>Pranzo e cena</span> • Aperto dal martedì alla domenica
           </p>
@@ -159,9 +160,7 @@
 
         </div>
 
-        <div class="section-cta-center">
-          <button class="btn-secondary">Scarica il menu completo (PDF)</button>
-        </div>
+      
       </div>
     </section>
 
@@ -216,7 +215,10 @@
               <li>Lunedì: Chiuso</li>
             </ul>
 
-            <button class="btn-primary" style="width: 100%;">Prenota ora</button>
+            <button class="btn-primary" style="width: 100%;" onclick="window.location.href='login.html'">
+  Prenota ora
+</button>
+
           </div>
 
           <div class="map-wrapper">
@@ -267,5 +269,23 @@
     <div class="footer-bottom">© 2025 Ristorante Softsprint • </div>
   </footer>
 
+  <!-- BOTTONE -->
+  <button id="backToTop" class="back-to-top" onclick="scrollToTop()">
+  ↑
+</button>
+<script>
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (window.scrollY > 300) {
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+});
+</script>
 </body>
 </html>
