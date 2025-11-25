@@ -1,0 +1,75 @@
+<?php
+require_once __DIR__ . "/../includes/db.php";
+require_once "OrdinePiatto.php";
+
+class Ordine {
+
+    private $db;
+
+    public function __construct() {
+        $this->db = open();
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // debug sicuro
+    }
+
+    // Inserisce nuovo ordine
+    public function creaOrdine(int $idTavolo, array $piatti, string $note = null): int {
+        if(!isset($_SESSION['user_id'])) {
+            return 0;
+        }
+
+        $sql = "INSERT INTO ordine (id_tavolo, data_ora, stato, id_utente, note) 
+                VALUES (?, NOW(), 'inviato', ?, ?)";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("iis", $idTavolo, $_SESSION['user_id'], $note);
+        $stmt->execute();
+
+        $idOrdine = $this->db->insert_id;
+        $stmt->close();
+
+        // piatti dell’ordine
+        $ordinePiatto = new OrdinePiatto();
+        foreach ($piatti as $p) {
+            $ordinePiatto->aggiungiPiatto($idOrdine, $p["id"], $p["qty"]);
+        }
+
+        return (int)$idOrdine;
+    }
+
+    // Ritorna tutti gli ordini non conclusi
+    public function getOrdiniAttivi(): array {
+        $sql = "SELECT * FROM ordine WHERE stato != 'completato' ORDER BY data_ora ASC";
+        $result = $this->db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Cambia stato ordine
+    public function cambiaStato(int $idOrdine, string $stato): bool {
+        $sql = "UPDATE ordine SET stato = ? WHERE id_ordine = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("si", $stato, $idOrdine);
+        return $stmt->execute();
+    }
+
+    // Carica piatti
+    public function getPiattiDaOrdine(int $idTavolo): array {
+        $sql = "SELECT id_ordine FROM ordine WHERE id_tavolo = ?  ORDER BY data_ora DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $idTavolo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        if (!$row) {
+            return [];
+        }
+        $ordinePiatto = new OrdinePiatto();
+        return $ordinePiatto->getPiatti($row['id_ordine']);
+    }
+
+    // Ottini ordini pronti
+    public function getOrdiniPronti(): array {
+        $sql = "SELECT * FROM ordine WHERE stato = 'pronto' ORDER BY data_ora ASC LIMIT 2";
+        $result = $this->db->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+}
