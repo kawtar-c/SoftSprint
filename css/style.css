@@ -355,7 +355,7 @@ section:not(.hero-blur) {
 .card-title-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;   /* prima era baseline */
   gap: 0.5rem;
 }
 
@@ -392,6 +392,27 @@ section:not(.hero-blur) {
 .section-cta-center {
   text-align: center;
   margin-top: 1.8rem;
+}
+/* CENTRA I PREZZI NEL MENU CAMERIERE */
+.dish {
+  display: grid !important;
+  grid-template-columns: 1fr 80px 40px; /* nome | prezzo | + */
+  align-items: center;
+}
+
+.dish span:nth-child(2) {
+  text-align: center !important;
+  display: block;
+  width: 100%;
+}
+
+/* RIMPICCIOLISCE INTERO TOTALE E LO MANTIENE SU UNA RIGA */
+.order-total {
+  font-size: 0.7rem !important;   
+  white-space: nowrap !important; 
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* PUNTI DI FORZA */
