@@ -28,7 +28,7 @@
         <a href="#punti-forza">Perché noi</a>
         <a href="#contatti">Contatti</a>
       </nav>
-      <a href="public/login.php" class="nav-cta">login</a>
+      <a href="public/login.php" class="nav-cta">Login</a>
     </div>
   </header>
   <main>
