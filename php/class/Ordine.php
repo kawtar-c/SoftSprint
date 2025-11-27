@@ -5,10 +5,15 @@ require_once "OrdinePiatto.php";
 class Ordine {
 
     private $db;
+    private $ordinePiatto;
 
-    public function __construct() {
+    //Accetta un OrdinePiatto “esterno” (mock nei test)
+    public function __construct($ordinePiatto = null) {
         $this->db = open();
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // debug sicuro
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); //debug sicuro
+
+        //  Se non viene passato nulla, usa quello reale (comportamento identico al passato)
+        $this->ordinePiatto = $ordinePiatto ?: new OrdinePiatto();
     }
 
     // Inserisce nuovo ordine
@@ -24,13 +29,12 @@ class Ordine {
         $stmt->bind_param("iis", $idTavolo, $_SESSION['user_id'], $note);
         $stmt->execute();
 
-        $idOrdine = $this->db->insert_id;
+        $idOrdine = $this->getInsertId();
         $stmt->close();
 
-        // piatti dell’ordine
-        $ordinePiatto = new OrdinePiatto();
+       // Us al’oggetto iniettato (mock nei test)
         foreach ($piatti as $p) {
-            $ordinePiatto->aggiungiPiatto($idOrdine, $p["id"], $p["qty"]);
+            $this->ordinePiatto->aggiungiPiatto($idOrdine, $p["id"], $p["qty"]);
         }
 
         return (int)$idOrdine;
@@ -62,8 +66,8 @@ class Ordine {
         if (!$row) {
             return [];
         }
-        $ordinePiatto = new OrdinePiatto();
-        return $ordinePiatto->getPiatti($row['id_ordine']);
+        //USO DELL’OGGETTO INIETTATO 
+        return $this->ordinePiatto->getPiatti($row['id_ordine']);
     }
 
     // Ottini ordini pronti
@@ -71,5 +75,10 @@ class Ordine {
         $sql = "SELECT * FROM ordine WHERE stato = 'pronto' ORDER BY data_ora ASC LIMIT 2";
         $result = $this->db->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // NUOVO METODO MOCKABILE
+    protected function getInsertId() {
+        return $this->db->insert_id;
     }
 }
