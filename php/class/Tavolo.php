@@ -5,8 +5,8 @@ class Tavolo {
 
     private $db;
 
-    public function __construct() {
-        $this->db = open();
+    public function __construct($db=null) {
+        $this->db = $db ?? open();
     }
 
     //Ottiene tutti i tavoli
@@ -18,19 +18,18 @@ class Tavolo {
 
     //Aggiorna stato tavolo (es. occupato, libero, in preparazione)
     public function setStato(int $idTavolo, string $stato): bool {
-        $query = "UPDATE tavolo SET stato = :stato WHERE id = :id";
+        $query = "UPDATE tavolo SET stato = ? WHERE id = ?";
         $stmt = $this->db->prepare($query);
-        return $stmt->execute([
-            ":stato" => $stato,
-            ":id" => $idTavolo
-        ]);
+        $stmt->bind_param("si", $stato, $idTavolo);
+        return $stmt->execute();
     }
 
     //Ottiene stato singolo tavolo
     public function getStato(int $idTavolo): ?string {
-        $query = "SELECT stato FROM tavolo WHERE id = :id";
+        $query = "SELECT stato FROM tavolo WHERE id = ?";
         $stmt = $this->db->prepare($query);
-        $stmt->execute([":id" => $idTavolo]);
-        return $stmt->fetchColumn();
+        $stmt->bind_param("i", $idTavolo);
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result["stato"] ?? null;
     }
 }
