@@ -37,7 +37,7 @@ $ordini = $ordineObj->getOrdiniAttivi();
     <section class="orders-panel" id="orders-panel">
         <?php foreach ($ordini as $ord): ?>
             <?php
-                $piatti = $ordineObj->getPiattiDaOrdine($ord['id_ordine']); 
+                $piatti = $ordineObj->getPiattiDaOrdine($ord['id_tavolo']); 
             ?>
             <article class="order-card" data-stato="<?= htmlspecialchars($ord['stato']) ?>" data-id="<?= $ord['id_ordine'] ?>">
                 <header class="order-card-header">
