@@ -103,7 +103,7 @@ class OrdineTest extends TestCase
 
     // Mock della classe Ordine OVERRIDANDO getInsertId()
     $ordine = $this->getMockBuilder(Ordine::class)
-                   ->setConstructorArgs([$mockOP])
+                   ->setConstructorArgs([$mockDB, $mockOP])
                    ->onlyMethods(['getInsertId'])
                    ->getMock();
 

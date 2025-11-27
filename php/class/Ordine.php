@@ -8,11 +8,10 @@ class Ordine {
     private $ordinePiatto;
 
     //Accetta un OrdinePiatto “esterno” (mock nei test)
-    public function __construct($ordinePiatto = null) {
-        $this->db = open();
+    public function __construct($db = null, $ordinePiatto = null) {
+        $this->db =$db ?? open();
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); //debug sicuro
 
-        //  Se non viene passato nulla, usa quello reale (comportamento identico al passato)
         $this->ordinePiatto = $ordinePiatto ?: new OrdinePiatto();
     }
 

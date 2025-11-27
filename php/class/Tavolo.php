@@ -18,7 +18,7 @@ class Tavolo {
 
     //Aggiorna stato tavolo (es. occupato, libero, in preparazione)
     public function setStato(int $idTavolo, string $stato): bool {
-        $query = "UPDATE tavoli SET stato = :stato WHERE id = :id";
+        $query = "UPDATE tavolo SET stato = :stato WHERE id = :id";
         $stmt = $this->db->prepare($query);
         return $stmt->execute([
             ":stato" => $stato,
@@ -28,7 +28,7 @@ class Tavolo {
 
     //Ottiene stato singolo tavolo
     public function getStato(int $idTavolo): ?string {
-        $query = "SELECT stato FROM tavoli WHERE id = :id";
+        $query = "SELECT stato FROM tavolo WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->execute([":id" => $idTavolo]);
         return $stmt->fetchColumn();
