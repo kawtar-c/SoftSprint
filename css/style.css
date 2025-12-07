@@ -1170,3 +1170,47 @@ body > footer {
     max-height: none;
   }
 }
+
+/* STILI PER LA PAGINA AMMINISTRATORE */
+/* STILE DEI TAB */
+.tab-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    }
+
+.tab-btn {
+    padding: 0.7rem 1.3rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f3f4f6;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+    }
+
+.tab-btn:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    }
+
+.tab-btn.active {
+    background: #8b3a3a;
+    color: white;
+    border-color: #732f2f;
+    }
+
+.tab-content {
+    display: none;
+    animation: fade 0.3s;
+    }
+
+.tab-content.active {
+    display: block;
+    }
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+    }

@@ -32,7 +32,7 @@ $ordine = new Ordine();
 $piattiOrdine = $ordine->getPiattiDaOrdine($id_tavolo);
 ?>
 
-<?php include_once "../php/includes/header2.php"; ?>
+<?php include_once "../php/includes/header.php"; header2();?>
 
 <header class="waiter-topbar">
     <div class="container topbar-inner">

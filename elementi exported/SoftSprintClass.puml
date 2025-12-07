@@ -1,0 +1,56 @@
+@startuml SoftSprintClass
+
+' Stile Diagramma
+skinparam classAttributeIconSize 10
+skinparam classBorderThickness <3>
+skinparam packageBorderThickness <4>
+skinparam linetype ortho
+top to bottom direction
+
+class Utente {
+    -db
+    +getUtenti()
+    +getUtente(int id_utente)
+    +aggiungiUtente(string email, string password, string ruolo, string nome, string cognome)
+    +modificaUtente(int id_utente, string email, string password, string ruolo, string nome, string cognome)
+    +eliminaUtente(int id_utente)
+    +login(string email,string password)
+    } 
+
+class Tavolo {
+    -db
+    +getTavoli()
+    +setStato(int idTavolo, string stato)
+    +getStato(int idTavolo)
+    }
+
+class Ordine {
+    -db
+    +creaOrdine(int idTavolo,Piatto[] piatti,string note)
+    +getOrdiniAttivi()
+    +cambiaStato(int idOrdine, string stato)
+    +getPiattiDaOrdinare(int idTavolo)
+    +getOrdiniPronti()
+    }
+
+class OrdinePiatto {
+    -db
+    +aggiungiPiatto(int idOrdine,int idPiatto,int qty)
+    +getPiatti(int idOrdine)
+    }
+
+class Piatto {
+    -db
+    +getPiatto(int id)
+    +getMenu()
+    +aggiungiPiatto(string nome, string descrizione, float prezzo, string categoria, string img)
+    +modificaPiatto(int id, string nome, string descrizione, float prezzo, string categoria, string img)
+    +eliminaPiatto(int id)
+    }
+
+Utente  -->  Ordine
+Ordine  -->  Tavolo
+Ordine  -->  OrdinePiatto
+Piatto  -->  OrdinePiatto
+
+@enduml

@@ -1,7 +1,26 @@
 <?php 
-  session_start();
+  
   require_once "../php/class/Utente.php";
   require_once "../php/config/conf.php";
+  //require_once "../php/includes/session.php";
+  session_start();
+  
+  if(isset($_SESSION['user_id'])){
+    if ($_SESSION['ruolo'] === "cameriere") {
+        header("Location: ./cameriere.php");
+        exit;
+    } elseif ($_SESSION['ruolo'] === "cuoco") {
+        header("Location: ./cuoco.php");
+        exit;
+    } elseif ($_SESSION['ruolo'] === "admin") {
+        header("Location: ./admin.php");
+        exit;
+    } else {
+        header("Location: ../index.php");
+        exit;
+    }
+    //echo "<script> alert('Utente loggato ".$_SESSION['email']."'); </script>";
+  }
 
   if (isset($_POST['login'])) {
     $u = new Utente();
@@ -14,6 +33,7 @@
 
         if ($utente['ruolo'] === "cameriere") header("Location: ./cameriere.php");
         elseif ($utente['ruolo'] === "cuoco") header("Location: ./cuoco.php");
+        elseif ($utente['ruolo'] === "admin") header("Location: ./admin.php");
         else header("Location: ../index.php");
 
         exit;
@@ -24,7 +44,7 @@
 ?>
 
 
-<?php include "../php/includes/header3.php"; ?>
+<?php include "../php/includes/header.php"; header3()?>
   <!-- LOGIN CARD -->
   <main>
     <div class="login-container">

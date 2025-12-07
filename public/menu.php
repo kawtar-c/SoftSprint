@@ -9,6 +9,7 @@
   foreach ($menu as $piatto) {
       $piattiPerCategoria[$piatto['categoria']][] = $piatto;
   }
+  header1();
 ?>
 <main>
 <!-- IMMAGINE SFOCATA CON TITOLO -->

@@ -12,7 +12,7 @@ $ordineObj = new Ordine();
 $ordini = $ordineObj->getOrdiniAttivi();
 ?>
 
-<?php include "../php/includes/header2.php"; ?>
+<?php include "../php/includes/header.php"; header2();?>
 
 <header class="kitchen-topbar">
     <div class="container kitchen-topbar-inner">
