@@ -2,7 +2,6 @@
   
   require_once "../php/class/Utente.php";
   require_once "../php/config/conf.php";
-  //require_once "../php/includes/session.php";
   session_start();
   
   if(isset($_SESSION['user_id'])){

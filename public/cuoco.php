@@ -26,7 +26,7 @@ $ordini = $ordineObj->getOrdiniAttivi();
             <select id="filtro-stato">
                 <option value="tutti">Tutti</option>
                 <option value="nuovo" selected>Nuovi</option>
-                <option value="preparazione">In preparazione</option>
+                <option value="in preparazione">In preparazione</option>
                 <option value="pronto">Pronti</option>
             </select>
         </div>

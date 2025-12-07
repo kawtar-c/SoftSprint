@@ -140,7 +140,7 @@ header2();
                 <p class="section-subtitle">Compila il modulo per aggiungere o modificare un piatto.</p>
             </div>
 
-            <form method="post" action="admin.php" class="login-form">
+            <form method="post" action="admin.php" class="admin-form">
                 <input type="hidden" name="id_piatto" value="<?php echo $piattoDaModificare['id_piatto'] ?? ''; ?>">
 
                 <input type="text" id="nome" name="nomePiatto" placeholder="nome del piatto" required
@@ -222,7 +222,7 @@ header2();
                 <p class="section-subtitle">Compila il modulo per aggiungere o modificare un utente.</p>
             </div>
 
-            <form method="post" action="admin.php" class="login-form">
+            <form method="post" action="admin.php" class="admin-form">
                 <input type="hidden" name="id_utente" value="<?php echo $utenteDaModificare['id_utente'] ?? ''; ?>">
 
                 <input type="text" id="nome" name="nome" placeholder="nome" required
@@ -232,8 +232,15 @@ header2();
                 <input type="email" id="email" name="email" placeholder="email" required
                        value="<?php echo htmlspecialchars($utenteDaModificare['email'] ?? ''); ?>">
                 
-                <input type="password" id="password" name="password" placeholder="password" <?php echo $utenteDaModificare ? '' : 'required'; ?>>
-                
+                <!-- Bottone per mostrare l'input -->
+                <button type="button" id="btnCambiaPassword" class="btn-primary" onclick="mostraInputPassword()" style="<?php echo $utenteDaModificare ? 'display:block;' : 'display:none;'; ?> border-radius: 12px;">
+                    Cambia password
+                </button>
+
+                <!-- Input nascosto -->
+                <input type="password" id="password" name="password" style="<?php echo $utenteDaModificare ? 'display:none;' : 'display:block;'; ?>" value="<?php echo htmlspecialchars($utenteDaModificare['password'] ?? ''); ?>"
+                    placeholder="Nuova password" <?php echo $utenteDaModificare ? '' : 'required'; ?>>
+                           
                 <select id="ruolo" name="ruolo" required>
                     <option value="admin" <?php if (($utenteDaModificare['ruolo'] ?? '') === 'admin') echo 'selected'; ?>>Admin</option>
                     <option value="cuoco" <?php if (($utenteDaModificare['ruolo'] ?? '') === 'cuoco') echo 'selected'; ?>>Cuoco</option>
@@ -268,4 +275,9 @@ tabButtons.forEach(btn => {
         document.getElementById(tab).classList.add("active");
     });
 });
+
+function mostraInputPassword() {
+    document.getElementById("password").style.display = "block";
+    document.getElementById("btnCambiaPassword").style.display = "none";
+}
 </script>

@@ -9,11 +9,6 @@ top to bottom direction
 
 class Utente {
     -db
-    +getUtenti()
-    +getUtente(int id_utente)
-    +aggiungiUtente(string email, string password, string ruolo, string nome, string cognome)
-    +modificaUtente(int id_utente, string email, string password, string ruolo, string nome, string cognome)
-    +eliminaUtente(int id_utente)
     +login(string email,string password)
     } 
 
