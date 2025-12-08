@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Dic 07, 2025 alle 01:43
+-- Creato il: Dic 08, 2025 alle 19:14
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -42,7 +42,10 @@ CREATE TABLE `ordine` (
 
 INSERT INTO `ordine` (`id_ordine`, `id_tavolo`, `data_ora`, `stato`, `id_utente`, `note`) VALUES
 (117, 1, '2025-11-27 14:53:08', 'in preparazione', 1, ''),
-(118, 2, '2025-11-28 12:28:37', 'in preparazione', 1, '');
+(118, 2, '2025-11-28 12:28:37', 'pronto', 1, ''),
+(119, 3, '2025-12-07 15:12:02', 'inviato', 1, ''),
+(120, 3, '2025-12-07 15:12:02', 'inviato', 1, ''),
+(121, 3, '2025-12-07 15:12:09', 'inviato', 1, '');
 
 -- --------------------------------------------------------
 
@@ -63,7 +66,10 @@ CREATE TABLE `ordine_piatto` (
 
 INSERT INTO `ordine_piatto` (`id_ordine_piatto`, `id_ordine`, `id_piatto`, `quantita`) VALUES
 (14, 117, 6, 2),
-(15, 118, 10, 3);
+(15, 118, 10, 3),
+(16, 119, 14, 3),
+(17, 120, 6, 2),
+(18, 121, 14, 3);
 
 -- --------------------------------------------------------
 
@@ -91,9 +97,31 @@ INSERT INTO `piatto` (`id_piatto`, `nome`, `prezzo`, `categoria`, `img`, `descri
 (9, 'Mazzarelle teramane', 5, 'Secondi', 'https://i.pinimg.com/736x/4c/a4/e0/4ca4e091c989a72f94814da385b10815.jpg', 'Involtini di interiora d’agnello avvolti in foglie di indivia e cotti lentamente con vino e aromi.'),
 (10, 'Arrosticini', 10, 'Secondi', 'https://i.pinimg.com/1200x/0f/d4/ba/0fd4bad4d4cd26fa5c514b6316da80a0.jpg', 'Spiedini tradizionali di pecora cotti alla brace, serviti con pane e olio abruzzese.'),
 (11, 'Pecora alla callara', 12, 'Secondi', 'https://i.pinimg.com/1200x/98/7c/0f/987c0f6c768ac35589b8159fa5634411.jpg', 'Carne di pecora cotta lentamente in pentola con patate, aromi di montagna e spezie tradizionali.'),
-(12, 'Pizza dolce abruzzese', 5, 'Dolci', 'https://i.pinimg.com/1200x/b3/ef/19/b3ef19d619f645b50a480df3314bd081.jpg', 'Dolce tradizionale a strati con pan di Spagna, alchermes, crema, cioccolato e decorazioni di mandorle.'),
-(13, 'Bocconotti teramani', 5, 'Dolci', 'https://i.pinimg.com/1200x/2c/cf/cb/2ccfcb40536564326c424e2fd1b62401.jpg', 'Dolcetti di frolla ripieni di cacao, mandorle e mosto cotto, tipici del teramano.'),
-(14, 'Ferratelle', 5, 'Dolci', 'https://i.pinimg.com/736x/c3/e8/d7/c3e8d71106a55c6d7969e0fe1553a56d.jpg', 'Cialde sottili profumate al limone o anice, cotte sull’antico ferro abruzzese.');
+(12, 'Pizza dolce abruzzese', 50, 'Dolci', 'https://i.pinimg.com/1200x/b3/ef/19/b3ef19d619f645b50a480df3314bd081.jpg', 'Dolce tradizionale a strati con pan di Spagna, alchermes, crema, cioccolato e decorazioni di mandorle.'),
+(13, 'Bocconotti teramani', 50, 'Dolci', 'https://i.pinimg.com/1200x/2c/cf/cb/2ccfcb40536564326c424e2fd1b62401.jpg', 'Dolcetti di frolla ripieni di cacao, mandorle e mosto cotto, tipici del teramano.'),
+(14, 'Ferratelle', 50, 'Dolci', 'https://i.pinimg.com/736x/c3/e8/d7/c3e8d71106a55c6d7969e0fe1553a56d.jpg', 'Cialde sottili profumate al limone o anice, cotte sull’antico ferro abruzzese.');
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `prenotazione`
+--
+
+CREATE TABLE `prenotazione` (
+  `nome` varchar(255) DEFAULT NULL,
+  `telefono` varchar(255) DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `persone` int(11) DEFAULT NULL,
+  `fascia_oraria` varchar(255) DEFAULT NULL,
+  `id_prenotazione` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dump dei dati per la tabella `prenotazione`
+--
+
+INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_oraria`, `id_prenotazione`) VALUES
+('mario', '3', '2025-12-16', 3, '19:30', 1);
 
 -- --------------------------------------------------------
 
@@ -166,6 +194,12 @@ ALTER TABLE `piatto`
   ADD PRIMARY KEY (`id_piatto`);
 
 --
+-- Indici per le tabelle `prenotazione`
+--
+ALTER TABLE `prenotazione`
+  ADD PRIMARY KEY (`id_prenotazione`);
+
+--
 -- Indici per le tabelle `tavolo`
 --
 ALTER TABLE `tavolo`
@@ -185,19 +219,25 @@ ALTER TABLE `utente`
 -- AUTO_INCREMENT per la tabella `ordine`
 --
 ALTER TABLE `ordine`
-  MODIFY `id_ordine` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `id_ordine` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT per la tabella `ordine_piatto`
 --
 ALTER TABLE `ordine_piatto`
-  MODIFY `id_ordine_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_ordine_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT per la tabella `piatto`
 --
 ALTER TABLE `piatto`
-  MODIFY `id_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT per la tabella `prenotazione`
+--
+ALTER TABLE `prenotazione`
+  MODIFY `id_prenotazione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT per la tabella `tavolo`

@@ -46,12 +46,6 @@ foreach ($menu as $p) {
 $ordine = new Ordine();
 $piattiOrdine = $ordine->getPiattiDaOrdine($id_tavolo);
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
 
 <?php echo $header->render('user'); ?> 
 

@@ -1,5 +1,5 @@
 <?php
-include "../php/includes/header.php"; 
+require_once "../php/includes/header.php"; 
 require_once "../php/class/Piatto.php";
 require_once "../php/class/Utente.php";
 require_once "../php/includes/session.php";
@@ -79,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-header2();
+$header = new Header();
+echo $header->render('user');
 ?>
 
 <!-- TAB BAR CENTRALE -->

@@ -50,12 +50,6 @@ if (isset($_POST['login'])) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
 
 <?php echo $header->render('simple'); ?>
 

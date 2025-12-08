@@ -2,16 +2,9 @@
 require_once "../php/includes/header.php";
 $header = new Header();
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
 
 <?php echo $header->render('guest'); ?>
-<?php 
-  // include "../php/includes/header.php";   // ❌ TOGLI QUESTA RIGA
+<?php
   require_once "../php/class/Piatto.php";
 
   $piatto= new Piatto();

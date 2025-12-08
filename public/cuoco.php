@@ -25,12 +25,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'cuoco') {
 $ordineObj = new Ordine();
 $ordini = $ordineObj->getOrdiniAttivi();   // ordini non completati
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
 
 <?php echo $header->render('user'); ?> 
 

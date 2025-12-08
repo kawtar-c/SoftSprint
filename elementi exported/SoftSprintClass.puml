@@ -43,6 +43,13 @@ class Piatto {
     +eliminaPiatto(int id)
     }
 
+class Prenotazione {
+    -db
+    +getPrenotazioni()
+    +aggiungiPrenotazione(string nome, string telefono, date data, int persone, string fascia_oraria)
+    +modificaPrenotazione(int idPrenotazione, string nome, string telefono, date data, int persone, string fascia_oraria)
+    +eliminaPrenotazione(int idPrenotazione)
+    }
 Utente  -->  Ordine
 Ordine  -->  Tavolo
 Ordine  -->  OrdinePiatto
