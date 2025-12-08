@@ -1,5 +1,17 @@
 <?php 
-  include "../php/includes/header.php"; 
+require_once "../php/includes/header.php";
+$header = new Header();
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<?php echo $header->render('guest'); ?>
+<?php 
+  // include "../php/includes/header.php";   // ❌ TOGLI QUESTA RIGA
   require_once "../php/class/Piatto.php";
 
   $piatto= new Piatto();
@@ -9,7 +21,7 @@
   foreach ($menu as $piatto) {
       $piattiPerCategoria[$piatto['categoria']][] = $piatto;
   }
-  header1();
+ 
 ?>
 <main>
 <!-- IMMAGINE SFOCATA CON TITOLO -->

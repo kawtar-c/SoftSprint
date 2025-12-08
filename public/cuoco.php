@@ -1,18 +1,38 @@
 <?php
-require_once "../php/includes/session.php";
+// =========================
+//  INCLUDE CLASSI
+// =========================
+require_once "../php/includes/header.php";    // classe Header (minuscolo, sempre uguale)
+require_once "../php/includes/session.php";   // qui dentro fai session_start()
 require_once "../php/class/Ordine.php";
 
+// =========================
+//  HEADER OBJECT
+// =========================
+$header = new Header();
+
+// =========================
+//  CONTROLLO RUOLO CUOCO
+// =========================
 if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'cuoco') {
     header("Location: login.php");
     exit;
 }
 
-// Prendi tutti gli ordini non completati
+// =========================
+//  DATI ORDINI
+// =========================
 $ordineObj = new Ordine();
-$ordini = $ordineObj->getOrdiniAttivi();
+$ordini = $ordineObj->getOrdiniAttivi();   // ordini non completati
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
 
-<?php include "../php/includes/header.php"; header2();?>
+<?php echo $header->render('user'); ?> 
 
 <header class="kitchen-topbar">
     <div class="container kitchen-topbar-inner">
@@ -37,9 +57,12 @@ $ordini = $ordineObj->getOrdiniAttivi();
     <section class="orders-panel" id="orders-panel">
         <?php foreach ($ordini as $ord): ?>
             <?php
+                // ATTENZIONE: qui usi id_tavolo, se in futuro serve id_ordine andrà cambiato
                 $piatti = $ordineObj->getPiattiDaOrdine($ord['id_tavolo']); 
             ?>
-            <article class="order-card" data-stato="<?= htmlspecialchars($ord['stato']) ?>" data-id="<?= $ord['id_ordine'] ?>">
+            <article class="order-card" 
+                     data-stato="<?= htmlspecialchars($ord['stato']) ?>" 
+                     data-id="<?= $ord['id_ordine'] ?>">
                 <header class="order-card-header">
                     <div>
                         <h2>Tavolo <?= htmlspecialchars($ord['id_tavolo']) ?></h2>
@@ -65,13 +88,19 @@ $ordini = $ordineObj->getOrdiniAttivi();
                 <?php endif; ?>
 
                 <div class="order-card-footer">
-                    <span class="order-time">Ricevuto alle <?= date("H:i", strtotime($ord['data_ora'])) ?></span>
+                    <span class="order-time">
+                        Ricevuto alle <?= date("H:i", strtotime($ord['data_ora'])) ?>
+                    </span>
                     <div class="order-actions">
                         <?php if ($ord['stato'] !== 'in preparazione'): ?>
-                        <button class="btn-secondary state-btn" data-state="in preparazione">In preparazione</button>
+                        <button class="btn-secondary state-btn" data-state="in preparazione">
+                            In preparazione
+                        </button>
                         <?php endif; ?>
                         <?php if ($ord['stato'] !== 'pronto'): ?>
-                        <button class="btn-primary state-btn" data-state="pronto">Pronto</button>
+                        <button class="btn-primary state-btn" data-state="pronto">
+                            Pronto
+                        </button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -113,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                
                 card.dataset.stato = nuovoStato;
                 const statusEl = card.querySelector('.order-status');
                 statusEl.textContent = nuovoStato.charAt(0).toUpperCase() + nuovoStato.slice(1);

@@ -1,10 +1,14 @@
 <?php 
-  
-  require_once "../php/class/Utente.php";
-  require_once "../php/config/conf.php";
-  session_start();
-  
-  if(isset($_SESSION['user_id'])){
+session_start();
+
+require_once "../php/includes/header.php";   // usa sempre lo stesso nome (minuscolo)
+require_once "../php/class/Utente.php";
+require_once "../php/config/conf.php";
+
+$header = new Header();
+
+// Se utente già loggato, reindirizza subito
+if (isset($_SESSION['user_id'])) {
     if ($_SESSION['ruolo'] === "cameriere") {
         header("Location: ./cameriere.php");
         exit;
@@ -18,10 +22,10 @@
         header("Location: ../index.php");
         exit;
     }
-    //echo "<script> alert('Utente loggato ".$_SESSION['email']."'); </script>";
-  }
+}
 
-  if (isset($_POST['login'])) {
+// Gestione login
+if (isset($_POST['login'])) {
     $u = new Utente();
     $utente = $u->login($_POST['email'], $_POST['password']);
 
@@ -30,35 +34,50 @@
         $_SESSION['email'] = $utente['email'];
         $_SESSION['ruolo'] = $utente['ruolo'];
 
-        if ($utente['ruolo'] === "cameriere") header("Location: ./cameriere.php");
-        elseif ($utente['ruolo'] === "cuoco") header("Location: ./cuoco.php");
-        elseif ($utente['ruolo'] === "admin") header("Location: ./admin.php");
-        else header("Location: ../index.php");
+        if ($utente['ruolo'] === "cameriere") {
+            header("Location: ./cameriere.php");
+        } elseif ($utente['ruolo'] === "cuoco") {
+            header("Location: ./cuoco.php");
+        } elseif ($utente['ruolo'] === "admin") {
+            header("Location: ./admin.php");
+        } else {
+            header("Location: ../index.php");
+        }
 
         exit;
     } else {
-        echo "<p style='color:red'> Email o password errati</p>";
+        $errore_login = "Email o password errati";
     }
-  }
+}
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
 
+<?php echo $header->render('simple'); ?>
 
-<?php include "../php/includes/header.php"; header3()?>
-  <!-- LOGIN CARD -->
-  <main>
-    <div class="login-container">
-      <h2>Accedi</h2>
-      <p class="login-subtitle">Accedi al tuo spazio personale</p>
+<!-- LOGIN CARD -->
+<main>
+  <div class="login-container">
+    <h2>Accedi</h2>
+    <p class="login-subtitle">Accedi al tuo spazio personale</p>
 
-      <form action="./login.php" method="POST" class="login-form">
-        <input type="text" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
+    <?php if (!empty($errore_login)) : ?>
+      <p style="color:red"><?php echo $errore_login; ?></p>
+    <?php endif; ?>
 
-        <button type="submit" name="login" class="login-submit">Accedi</button>
-      </form>
+    <form action="./login.php" method="POST" class="login-form">
+      <input type="text" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
 
-    </div>
-  </main>
+      <button type="submit" name="login" class="login-submit">Accedi</button>
+    </form>
+
+  </div>
+</main>
 
 </body>
 </html>
