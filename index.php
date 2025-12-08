@@ -44,12 +44,10 @@
             Un ristorante a conduzione familiare dove ogni piatto racconta una storia,
             preparato con ingredienti freschi e ricette tramandate da generazioni.
           </p>
-          <div class="hero-buttons">
-          <button class="btn-primary" onclick="window.location.href='public/menu.php'">
-  Guarda il menu
-</button>
-          
-          </div>
+         <div class="hero-buttons">
+    <a href="./public/menu.php" class="btn-primary">Guarda il menu</a>
+    <a href="./public/prenotazione.php" class="btn-primary">Prenota ora</a>
+</div>
           <br>
           <p class="hero-info">
             <span>Pranzo e cena</span> • Aperto dal martedì alla domenica
@@ -216,9 +214,7 @@
               <li>Lunedì: Chiuso</li>
             </ul>
 
-            <button class="btn-primary" style="width: 100%;" onclick="window.location.href='login.html'">
-  Prenota ora
-</button>
+            
 
           </div>
 
