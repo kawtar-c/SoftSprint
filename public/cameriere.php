@@ -297,5 +297,59 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Carica i tavoli appena si apre la pagina
+    caricaTavoli();
+
+    function caricaTavoli() {
+        fetch("../php/config/get_tavoli.php")  
+            .then(res => res.json())
+            .then(data => {
+
+                const container = document.getElementById("tavoli-container");
+                container.innerHTML = ""; // svuota prima
+
+                data.tavoli.forEach(t => {
+
+                    // Creazione box tavolo
+                    const div = document.createElement("div");
+                    div.className = "tavolo-card";
+
+                    div.innerHTML = `
+                        <h3>Tavolo ${t.numero}</h3>
+                        <p>Stato: <strong>${t.stato}</strong></p>
+
+                        <button onclick="cambiaStato(${t.id_tavolo}, 'libero')">Libero</button>
+                        <button onclick="cambiaStato(${t.id_tavolo}, 'occupato')">Occupato</button>
+                        <button onclick="cambiaStato(${t.id_tavolo}, 'in_preparazione')">In preparazione</button>
+                    `;
+
+                    container.appendChild(div);
+                });
+            });
+    }
+
+    // Funzione che aggiorneremo dopo
+    window.cambiaStato = function (id, stato) {
+        alert("Hai cliccato per cambiare lo stato del tavolo " + id + " a: " + stato);
+    }
+
+});
+</script>
+
+
 </body>
 </html>
+
+<hr>
+<section class="tavoli-section">
+    <h2>Gestione Stato Tavoli</h2>
+
+    <div id="tavoli-container" class="tavoli-grid"></div>
+</section>
+
+</body>
+</html>
+
