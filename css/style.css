@@ -979,7 +979,7 @@ body > footer {
 
 /* LAYOUT PRINCIPALE A DUE COLONNE */
 .waiter-layout {
-  width: 200% !important; /* per evitare problemi di overflow */
+  width: 200% !important;
   display: flex;
   align-items: center;
   margin-top: 2rem;
