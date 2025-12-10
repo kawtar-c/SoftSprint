@@ -261,3 +261,9 @@ echo $header->render('user');
 
 </main>
 
+<script>
+    function mostraInputPassword() {
+        document.getElementById("password").style.display = "block";
+        document.getElementById("btnCambiaPassword").style.display = "none";
+    }
+</script>

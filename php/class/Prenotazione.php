@@ -16,6 +16,14 @@ class Prenotazione {
         $this->db = open();
     }
 
+    public function getPrenotazioneById(int $id_prenotazione): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM prenotazione WHERE id_prenotazione = ?");
+        $stmt->bind_param("i", $id_prenotazione);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc() ?: null;
+    }
+
     // Ottieni tutte le prenotazioni
     public function getPrenotazioni(): array {
         $result = $this->db->query("SELECT * FROM prenotazione");

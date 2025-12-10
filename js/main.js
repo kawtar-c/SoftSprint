@@ -427,8 +427,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    function mostraInputPassword() {
-        document.getElementById("password").style.display = "block";
-        document.getElementById("btnCambiaPassword").style.display = "none";
-    }
+
 });

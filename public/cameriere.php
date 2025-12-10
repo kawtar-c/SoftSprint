@@ -15,53 +15,69 @@ if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'cameriere') {
     exit;
 }
 
-// Tavolo selezionato
 $id_tavolo = isset($_GET['tavolo']) ? intval($_GET['tavolo']) : 0;
 
-// Lista tavoli
 $tavoloObj = new Tavolo();
 $listaTavoli = $tavoloObj->getTavoli();
 
-// Lista prenotazioni
 $prenotazioni = new Prenotazione();
-$prenotazioni = $prenotazioni->getPrenotazioni();
+$prenotazioneDaModificare = null;
+$prenotazioni_list = $prenotazioni->getPrenotazioni();
 
-// Menu Piatti
+$id_prenotazione_da_modificare = isset($_GET['modifica_id']) ? intval($_GET['modifica_id']) : 0;
+
+if ($id_prenotazione_da_modificare > 0) {
+    $prenotazioneDaModificare = $prenotazioni->getPrenotazioneById($id_prenotazione_da_modificare);
+}
+
 $piattoObj = new Piatto();
 $menu = $piattoObj->getMenu();
 
-// Raggruppo piatti per categoria
 $piattiPerCategoria = [];
 foreach ($menu as $p) {
     $piattiPerCategoria[$p['categoria']][] = $p;
 }
 
-// Piatti già ordinati (se ci sono)
 $ordine = new Ordine();
 $piattiOrdine = $ordine->getPiattiDaOrdine($id_tavolo);
 
 
-// Gestione Prenotazioni
-//Switch tra le varie azioni
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $pre=new Prenotazione();
     if (isset($_POST['assegna'])) {
         $id_prenotazione = intval($_POST['id_prenotazione']);
-        $id_tavolo = intval($_POST['assegna']);
-        //echo "<script>alert('Assegna tavolo: " . $id . "');</script>";
-        $pre=$pre->assegnaTavolo($id_prenotazione, $id_tavolo);
-        header("Location: " . $_SERVER['PHP_SELF']);
+        $id_tavolo_assegnato = intval($_POST['assegna']);
+        $pre=$pre->assegnaTavolo($id_prenotazione, $id_tavolo_assegnato);
+        header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
     } elseif (isset($_POST['modifica'])) {
         $id = intval($_POST['modifica']);
-        $piatto->eliminaPiatto($id);
-        header("Location: " . $_SERVER['PHP_SELF']);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?modifica_id=" . $id . "#GestioneSalaContainer");
         exit;
     } elseif(isset($_POST['elimina'])) {
         $id = intval($_POST['elimina']);
         $pre=$pre->eliminaPrenotazione($id);
-        header("Location: " . $_SERVER['PHP_SELF']);
+        header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
+        exit;
+    } elseif(isset($_POST['ModificaPrenotazione'])) {
+        $id_prenotazione = intval($_POST['id_prenotazione'] ?? 0);
+        $nome = $_POST['nome_cliente'] ?? '';
+        $telefono = $_POST['telefono_cliente'] ?? '';
+        $data = $_POST['data_prenotazione'] ?? '';
+        $ora = $_POST['ora_prenotazione'] ?? '';
+        $persone = intval($_POST['persone'] ?? 1);
+        $pre=$pre->modificaPrenotazione($id_prenotazione, $nome, $telefono, $data, $persone, $ora);
+        header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
+        exit;
+    } elseif(isset($_POST['AggiungiPrenotazione'])) {
+        $nome = $_POST['nome_cliente'] ?? '';
+        $telefono = $_POST['telefono_cliente'] ?? '';
+        $data = $_POST['data_prenotazione'] ?? '';
+        $ora = $_POST['ora_prenotazione'] ?? '';
+        $persone = intval($_POST['persone'] ?? 1);
+        $pre=$pre->aggiungiPrenotazione($nome, $telefono, $data, $persone, $ora);
+        header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
     }
 }
@@ -168,62 +184,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <div id="GestioneSalaContainer" class="tab-content waiter-layout-gestion" style="display: none;">
 
-        <section id="gestionePrenotazioni" class="menu-panel">
+        <section id="gestionePrenotazioni" class="menu-panel" style="max-height: calc(100vh - 40px);">
 
             <header class="order-header">
                 <h2>Gestione Prenotazioni</h2>
             </header>
             
             <ul class="order-items">
-                <?php foreach ($prenotazioni as $p): ?>
+                <?php foreach ($prenotazioni_list as $p): 
+                    $prenotazione_id = htmlspecialchars($p['id_prenotazione']);
+                    $dropdown_id = "dropdownTavoliContent_" . $prenotazione_id;
+                ?>
                     <li value="<?= $p['id_prenotazione'] ?>">
-                        <h3>Prenotazione #<?= htmlspecialchars($p['id_prenotazione']); ?></h3>
+                        <h3>Prenotazione #<?= $prenotazione_id; ?></h3>
                         <p>Cliente: <strong><?= htmlspecialchars($p['nome']); ?></strong></p>
+                        <p>Telefono: <strong><?= htmlspecialchars($p['telefono']); ?></strong></p>
                         <p>Data: <strong><?= htmlspecialchars($p['data']); ?></strong> Ora: <strong><?= htmlspecialchars($p['fascia_oraria']); ?></strong></p>
+                        
                         <div class="order-actions" style="margin-top: 10px;">
                             <form action="cameriere.php" method="post">
-                                <button name="modifica" value="<?= htmlspecialchars($p['id_prenotazione']); ?>" class="btn-primary">Modifica</button>
-                                <button name="elimina" value="<?= htmlspecialchars($p['id_prenotazione']); ?>" class="btn-primary">Elimina</button>
+                                <button name="modifica" value="<?= $prenotazione_id; ?>" class="btn-primary">Modifica</button>
+                                <button name="elimina" value="<?= $prenotazione_id; ?>" class="btn-primary">Elimina</button>
                             </form>
                         </div>
 
-                        <div class="custom-dropdown-container " style="margin-top: 10px;">
-                            <button class="dropdown-toggle btn-secondary" id="dropdownTavoliBtn" onclick="toggleDropdown()">
-                                    Assegna Tavolo ▾
+                        <div class="custom-dropdown-container" style="margin-top: 10px;">
+                            
+                            <button class="dropdown-toggle btn-secondary" id="dropdownTavoliBtn_<?= $prenotazione_id; ?>" 
+                                    onclick="toggleDropdown('<?= $dropdown_id; ?>')">
+                                Assegna Tavolo ▾
                             </button>
 
-                            <div class="dropdown-menu" id="dropdownTavoliContent" style="display: none;">
+                            <div class="dropdown-menu" id="<?= $dropdown_id; ?>" style="display: none;">
                                 <ul style="list-style-type: none; padding: 0; margin: 0;">
-                                    <li style=" margin: 5px;">
-                                        <form action="cameriere.php" method="post" style="display: flex; flex-direction: grid;">
-                                            <input type="hidden" name="id_prenotazione" value="<?= htmlspecialchars($p['id_prenotazione']); ?>">
+                                    <li style="margin: 5px;">
+                                        <form action="cameriere.php" method="post">
+                                            <input type="hidden" name="id_prenotazione" value="<?= $prenotazione_id; ?>">
                                             <?php foreach ($listaTavoli as $t): ?>
                                                 <button 
                                                     name="assegna"
                                                     class="dropdown-item tavolo-btn btn-secondary" 
-                                                    value="<?= htmlspecialchars($t['id_tavolo']); ?>"
-                                                    onclick="selezionaTavoloAzione(<?= htmlspecialchars($t['id_tavolo']); ?>)">
+                                                    value="<?= htmlspecialchars($t['id_tavolo']); ?>">
                                                     Tavolo <?= htmlspecialchars($t['numero']); ?>
                                                 </button>
                                             <?php endforeach; ?>
                                         </form>
                                     </li>
-                                </ul>  
+                                </ul> 
                             </div>
                         </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
         </section>
+
+        <aside id="modPren" >
+            <div class="login-container" style="margin-top: 0px; width: 100%;">
+                <div class="section-header">
+                    <h2 class="section-title"><?php echo $prenotazioneDaModificare ? 'Modifica Prenotazione' : 'Aggiungi Nuova Prenotazione'; ?></h2>
+                    <p class="section-subtitle">Compila il modulo per aggiungere o modificare una prenotazione.</p>
+                </div>
+
+                <form method="post" action="cameriere.php" class="admin-form">
+                    <input type="hidden" name="id_prenotazione" value="<?php echo htmlspecialchars($prenotazioneDaModificare['id_prenotazione'] ?? ''); ?>">
+
+                    <input type="text" id="nome_cliente" name="nome_cliente" placeholder="Nome Cliente" required
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['nome'] ?? ''); ?>">
+
+                    <input type="tel" id="telefono_cliente" name="telefono_cliente" placeholder="Telefono Cliente" required
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['telefono'] ?? ''); ?>">
+
+                    <input type="date" id="data_prenotazione" name="data_prenotazione" placeholder="Data" required
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['data'] ?? ''); ?>">
+
+                    <input type="time" id="ora_prenotazione" name="ora_prenotazione" placeholder="Ora" required
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['fascia_oraria'] ?? ''); ?>">
+
+                    <input type="number" id="persone" name="persone" placeholder="Numero Persone" required min="1"
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['numero_persone'] ?? ''); ?>">
+                    
+                    <select id="Tavolo" name="id_tavolo">
+                        <option value="">-- Seleziona Tavolo (Opzionale) --</option>
+                        <?php 
+                        
+                        foreach ($listaTavoli as $t): 
+                            $selected = (($prenotazioneDaModificare['id_tavolo'] ?? '') == $t['id_tavolo']) ? 'selected' : '';
+                        ?>
+                            <option value="<?= $t['id_tavolo'] ?>" <?= $selected ?>>
+                                Tavolo <?= htmlspecialchars($t['numero']); ?> (<?= htmlspecialchars($t['stato']); ?>)
+                            </option>
+                        <?php endforeach; ?>
+
+                    </select>
+                    
+                    <div class="form-cta-center">
+                        <button type="submit" class="btn-primary" name="<?php echo $prenotazioneDaModificare ? 'ModificaPrenotazione' : 'AggiungiPrenotazione'; ?>">
+                            <?php echo $prenotazioneDaModificare ? 'Salva Modifiche' : 'Aggiungi Prenotazione'; ?>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </aside>
     </div>
 
 </main>
 
 
 <script>
+function vaiAlTavolo(selectElement) {
+    if (selectElement.value) {
+        window.location.href = 'cameriere.php?tavolo=' + selectElement.value;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     
-    // Gestione delle schermate
     const tabButtons = document.querySelectorAll(".tab-btn");
     const tabContents = document.querySelectorAll(".tab-content");
 
@@ -254,33 +329,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
-// Funzione per mostrare/nascondere il contenuto della tendina
-function toggleDropdown() {
-    const content = document.getElementById("dropdownTavoliContent");
-    if (content.style.display === "block") {
-        content.style.display = "none";
-    } else {
-        content.style.display = "block";
-    }
-}
 
-// Funzione che gestisce l'azione quando un pulsante Tavolo viene cliccato
-function selezionaTavoloAzione(idTavolo) {
-    toggleDropdown();
-    window.location.href = 'cameriere.php?tavolo=' + idTavolo;
-}
-
-// Opzionale: chiudi il dropdown se l'utente clicca fuori
-document.addEventListener("click", (event) => {
-    if (!event.target.matches('.dropdown-toggle')) {
-        const dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (let i = 0; i < dropdowns.length; i++) {
-            const openDropdown = dropdowns[i];
-            if (openDropdown.style.display === "block") {
-                openDropdown.style.display = "none";
-            }
+function toggleDropdown(contentId) {
+    const content = document.getElementById(contentId); 
+    
+    if (content) {
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            const dropdowns = document.querySelectorAll(".dropdown-menu");
+            dropdowns.forEach(c => {
+                if (c.id !== contentId) {
+                     c.style.display = "none";
+                }
+            });
+            
+            content.style.display = "block";
         }
     }
+}
+
+document.addEventListener("click", (event) => {
+    const containers = document.querySelectorAll(".custom-dropdown-container");
+    
+    containers.forEach(container => {
+        const toggleBtn = container.querySelector('.dropdown-toggle');
+        const content = container.querySelector('.dropdown-menu');
+        
+        if (content && content.style.display === "block" && !toggleBtn.contains(event.target) && !content.contains(event.target)) {
+            content.style.display = "none";
+        }
+    });
 });
 </script>
 
