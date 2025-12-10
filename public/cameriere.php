@@ -199,6 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h3>Prenotazione #<?= $prenotazione_id; ?></h3>
                         <p>Cliente: <strong><?= htmlspecialchars($p['nome']); ?></strong></p>
                         <p>Telefono: <strong><?= htmlspecialchars($p['telefono']); ?></strong></p>
+                        <p>Persone: <strong><?= htmlspecialchars($p['persone']); ?></strong></p>
                         <p>Data: <strong><?= htmlspecialchars($p['data']); ?></strong> Ora: <strong><?= htmlspecialchars($p['fascia_oraria']); ?></strong></p>
                         
                         <div class="order-actions" style="margin-top: 10px;">
