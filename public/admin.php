@@ -261,24 +261,3 @@ echo $header->render('user');
 
 </main>
 
-
-<script>
-// Gestione delle schermate
-const tabButtons = document.querySelectorAll(".tab-btn, #addDishBtn, #addUsrBtn");
-const tabContents = document.querySelectorAll(".tab-content, #addDish, #addUsr");
-
-tabButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        const tab = btn.dataset.tab;
-        tabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        tabContents.forEach(c => c.classList.remove("active"));
-        document.getElementById(tab).classList.add("active");
-    });
-});
-
-function mostraInputPassword() {
-    document.getElementById("password").style.display = "block";
-    document.getElementById("btnCambiaPassword").style.display = "none";
-}
-</script>

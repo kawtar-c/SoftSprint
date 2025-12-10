@@ -978,13 +978,26 @@ body > footer {
 }
 
 /* LAYOUT PRINCIPALE A DUE COLONNE */
-
 .waiter-layout {
+  width: 200% !important;
+  display: flex;
+  align-items: center;
   margin-top: 2rem;
-  display: grid;
-  grid-template-columns: 2fr 1.2fr;
   gap: 1.2rem;
+  
 }
+
+.waiter-layout > div {
+  width: 100% !important;
+  gap: 1.2rem;
+  margin-bottom: 50px;
+
+}
+
+.waiter-layout > div > section, aside {
+  width: 50% !important;
+  }
+
 
 /* COLONNA SINISTRA: MENU PIATTI */
 
@@ -2217,8 +2230,7 @@ body > footer {
 
 .waiter-layout {
   margin-top: 2rem;
-  display: grid;
-  grid-template-columns: 2fr 1.2fr;
+
   gap: 1.2rem;
 }
 
@@ -2289,6 +2301,8 @@ body > footer {
 .dish-add:hover {
   background: #732f2f;
 }
+
+
 
 /* COLONNA DESTRA: RIEPILOGO ORDINE */
 

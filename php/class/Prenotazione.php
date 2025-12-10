@@ -45,4 +45,11 @@ class Prenotazione {
         $stmt->bind_param("sssisi", $nome, $telefono, $data, $persone, $fascia_oraria, $id_prenotazione);
         return $stmt->execute();
     }
+
+    // Assegna tavolo a prenotazione
+    public function assegnaTavolo(int $id_prenotazione, int $id_tavolo): bool {
+        $stmt = $this->db->prepare("UPDATE prenotazione SET id_tavolo = ? WHERE id_prenotazione = ?");
+        $stmt->bind_param("ii", $id_tavolo, $id_prenotazione);
+        return $stmt->execute();
+    }   
 }
