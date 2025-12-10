@@ -6,6 +6,12 @@ class Prenotazione {
 
     private $db;
 
+    protected function preparaStatement($stmt, $nome, $telefono, $data, $persone, $fascia)
+    {
+    return $stmt->bind_param("sssis", $nome, $telefono, $data, $persone, $fascia);
+    }
+
+
     public function __construct() {
         $this->db = open();
     }
@@ -19,11 +25,14 @@ class Prenotazione {
     // Aggiungi prenotazione
     public function aggiungiPrenotazione(string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {
         $stmt = $this->db->prepare("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssis", $nome, $telefono, $data, $persone, $fascia_oraria);
-        return $stmt->execute();
+        // USIAMO IL WRAPPER QUI
+        $resBind = $this->preparaStatement($stmt, $nome, $telefono, $data, $persone, $fascia_oraria);
+        if (!$resBind) return false;
+
+        return $stmt->execute();;
     }
 
-    // Elimina prenotazione
+    // Elimina prenotaione
     public function eliminaPrenotazione(int $id_prenotazione): bool {
         $stmt = $this->db->prepare("DELETE FROM prenotazione WHERE id_prenotazione = ?");
         $stmt->bind_param("i", $id_prenotazione);
