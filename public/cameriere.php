@@ -39,6 +39,32 @@ foreach ($menu as $p) {
 // Piatti già ordinati (se ci sono)
 $ordine = new Ordine();
 $piattiOrdine = $ordine->getPiattiDaOrdine($id_tavolo);
+
+
+// Gestione Prenotazioni
+//Switch tra le varie azioni
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    $pre=new Prenotazione();
+    if (isset($_POST['assegna'])) {
+        $id_prenotazione = intval($_POST['id_prenotazione']);
+        $id_tavolo = intval($_POST['assegna']);
+        //echo "<script>alert('Assegna tavolo: " . $id . "');</script>";
+        $pre=$pre->assegnaTavolo($id_prenotazione, $id_tavolo);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    } elseif (isset($_POST['modifica'])) {
+        $id = intval($_POST['modifica']);
+        $piatto->eliminaPiatto($id);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    } elseif(isset($_POST['elimina'])) {
+        $id = intval($_POST['elimina']);
+        $pre=$pre->eliminaPrenotazione($id);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+}
 ?>
 
 <?php echo $header->render('user'); ?> 
@@ -154,38 +180,41 @@ $piattiOrdine = $ordine->getPiattiDaOrdine($id_tavolo);
                         <h3>Prenotazione #<?= htmlspecialchars($p['id_prenotazione']); ?></h3>
                         <p>Cliente: <strong><?= htmlspecialchars($p['nome']); ?></strong></p>
                         <p>Data: <strong><?= htmlspecialchars($p['data']); ?></strong> Ora: <strong><?= htmlspecialchars($p['fascia_oraria']); ?></strong></p>
-                        <div class="order-actions">
-                            <button class="btn-secondary">Assegna</button>
-                            <button class="btn-primary">Modifica</button>
-                            <button class="btn-primary">Elimina</button>
+                        <div class="order-actions" style="margin-top: 10px;">
+                            <form action="cameriere.php" method="post">
+                                <button name="modifica" value="<?= htmlspecialchars($p['id_prenotazione']); ?>" class="btn-primary">Modifica</button>
+                                <button name="elimina" value="<?= htmlspecialchars($p['id_prenotazione']); ?>" class="btn-primary">Elimina</button>
+                            </form>
+                        </div>
+
+                        <div class="custom-dropdown-container " style="margin-top: 10px;">
+                            <button class="dropdown-toggle btn-secondary" id="dropdownTavoliBtn" onclick="toggleDropdown()">
+                                    Assegna Tavolo ▾
+                            </button>
+
+                            <div class="dropdown-menu" id="dropdownTavoliContent" style="display: none;">
+                                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                                    <li style=" margin: 5px;">
+                                        <form action="cameriere.php" method="post" style="display: flex; flex-direction: grid;">
+                                            <input type="hidden" name="id_prenotazione" value="<?= htmlspecialchars($p['id_prenotazione']); ?>">
+                                            <?php foreach ($listaTavoli as $t): ?>
+                                                <button 
+                                                    name="assegna"
+                                                    class="dropdown-item tavolo-btn btn-secondary" 
+                                                    value="<?= htmlspecialchars($t['id_tavolo']); ?>"
+                                                    onclick="selezionaTavoloAzione(<?= htmlspecialchars($t['id_tavolo']); ?>)">
+                                                    Tavolo <?= htmlspecialchars($t['numero']); ?>
+                                                </button>
+                                            <?php endforeach; ?>
+                                        </form>
+                                    </li>
+                                </ul>  
+                            </div>
                         </div>
                     </li>
                 <?php endforeach; ?>
             </ul>
         </section>
-
-
-        <aside id="gestioneTavoli" class="order-panel">
-
-            <header class="order-header">
-                <h2>Gestione Tavoli</h2>
-            </header>
-            
-            <div id="tavoli-container">
-                <?php foreach ($listaTavoli as $t): ?>
-                    <div class="tavolo-card" data-id="<?= $t['id_tavolo'] ?>">
-                        <h3>Tavolo <?= htmlspecialchars($t['numero']); ?></h3>
-                        <p>Stato: <strong><?= htmlspecialchars($t['stato']); ?></strong></p>
-                        <div class="order-actions">
-                            <button class="btn-secondary" onclick="cambiaStato(<?= $t['id_tavolo'] ?>, 'libero')">Libero</button>
-                            <button class="btn-primary" onclick="cambiaStato(<?= $t['id_tavolo'] ?>, 'occupato')">Occupato</button>
-                            <button class="btn-primary" onclick="cambiaStato(<?= $t['id_tavolo'] ?>, 'Sparecchiato')">Sparecchiato</button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-        </aside>
     </div>
 
 </main>
@@ -224,6 +253,34 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+});
+// Funzione per mostrare/nascondere il contenuto della tendina
+function toggleDropdown() {
+    const content = document.getElementById("dropdownTavoliContent");
+    if (content.style.display === "block") {
+        content.style.display = "none";
+    } else {
+        content.style.display = "block";
+    }
+}
+
+// Funzione che gestisce l'azione quando un pulsante Tavolo viene cliccato
+function selezionaTavoloAzione(idTavolo) {
+    toggleDropdown();
+    window.location.href = 'cameriere.php?tavolo=' + idTavolo;
+}
+
+// Opzionale: chiudi il dropdown se l'utente clicca fuori
+document.addEventListener("click", (event) => {
+    if (!event.target.matches('.dropdown-toggle')) {
+        const dropdowns = document.getElementsByClassName("dropdown-menu");
+        for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.style.display === "block") {
+                openDropdown.style.display = "none";
+            }
+        }
+    }
 });
 </script>
 
