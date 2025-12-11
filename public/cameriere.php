@@ -262,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                          value="<?php echo htmlspecialchars($prenotazioneDaModificare['fascia_oraria'] ?? ''); ?>">
 
                     <input type="number" id="persone" name="persone" placeholder="Numero Persone" required min="1"
-                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['numero_persone'] ?? ''); ?>">
+                         value="<?php echo htmlspecialchars($prenotazioneDaModificare['persone'] ?? ''); ?>">
                     
                     <select id="Tavolo" name="id_tavolo">
                         <option value="">-- Seleziona Tavolo (Opzionale) --</option>
