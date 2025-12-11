@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_prenotazione = intval($_POST['id_prenotazione']);
         $id_tavolo_assegnato = intval($_POST['assegna']);
         $pre=$pre->assegnaTavolo($id_prenotazione, $id_tavolo_assegnato);
+        $tavoloObj=$tavoloObj->setStato($id_tavolo_assegnato, 'prenotato');
         header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
     } elseif (isset($_POST['modifica'])) {
@@ -58,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif(isset($_POST['elimina'])) {
         $id = intval($_POST['elimina']);
         $pre=$pre->eliminaPrenotazione($id);
+        $tavoloObj=$tavoloObj->setStato($id_tavolo_assegnato, 'libero');
         header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
     } elseif(isset($_POST['ModificaPrenotazione'])) {
@@ -67,7 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = $_POST['data_prenotazione'] ?? '';
         $ora = $_POST['ora_prenotazione'] ?? '';
         $persone = intval($_POST['persone'] ?? 1);
-        $pre=$pre->modificaPrenotazione($id_prenotazione, $nome, $telefono, $data, $persone, $ora);
+        $tavolo_id = intval($_POST['id_tavolo'] ?? 0);
+        $pre=$pre->modificaPrenotazione($id_prenotazione, $nome, $telefono, $data, $persone, $ora, $tavolo_id);
+        $tavoloObj=$tavoloObj->setStato($tavolo_id, 'prenotato');
         header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
     } elseif(isset($_POST['AggiungiPrenotazione'])) {
@@ -201,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p>Telefono: <strong><?= htmlspecialchars($p['telefono']); ?></strong></p>
                         <p>Persone: <strong><?= htmlspecialchars($p['persone']); ?></strong></p>
                         <p>Data: <strong><?= htmlspecialchars($p['data']); ?></strong> Ora: <strong><?= htmlspecialchars($p['fascia_oraria']); ?></strong></p>
-                        
+                        <p>Tavolo: <strong><?= htmlspecialchars($p['id_tavolo']); ?></strong></p>
                         <div class="order-actions" style="margin-top: 10px;">
                             <form action="cameriere.php" method="post">
                                 <button name="modifica" value="<?= $prenotazione_id; ?>" class="btn-primary">Modifica</button>
@@ -221,7 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <li style="margin: 5px;">
                                         <form action="cameriere.php" method="post">
                                             <input type="hidden" name="id_prenotazione" value="<?= $prenotazione_id; ?>">
-                                            <?php foreach ($listaTavoli as $t): ?>
+                                            <?php foreach ($listaTavoli as $t): 
+                                                if($t['stato'] != 'libero'){
+                                                    continue;
+                                                } ?>
                                                 <button 
                                                     name="assegna"
                                                     class="dropdown-item tavolo-btn btn-secondary" 
@@ -269,6 +276,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php 
                         
                         foreach ($listaTavoli as $t): 
+                            if($t['stato'] != 'libero'){
+                                continue;
+                            }
                             $selected = (($prenotazioneDaModificare['id_tavolo'] ?? '') == $t['id_tavolo']) ? 'selected' : '';
                         ?>
                             <option value="<?= $t['id_tavolo'] ?>" <?= $selected ?>>

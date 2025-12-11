@@ -16,9 +16,9 @@ class Tavolo {
         return $req->fetch_all(MYSQLI_ASSOC);
     }
 
-    //Aggiorna stato tavolo (es. occupato, libero, in preparazione)
+    //Aggiorna stato tavolo
     public function setStato(int $idTavolo, string $stato): bool {
-        $query = "UPDATE tavolo SET stato = ? WHERE id = ?";
+        $query = "UPDATE tavolo SET stato = ? WHERE id_tavolo = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("si", $stato, $idTavolo);
         return $stmt->execute();
@@ -26,7 +26,7 @@ class Tavolo {
 
     //Ottiene stato singolo tavolo
     public function getStato(int $idTavolo): ?string {
-        $query = "SELECT stato FROM tavolo WHERE id = ?";
+        $query = "SELECT stato FROM tavolo WHERE id_tavolo = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("i", $idTavolo);
         $result = $stmt->get_result()->fetch_assoc();
