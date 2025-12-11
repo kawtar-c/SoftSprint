@@ -35,5 +35,5 @@ jobs:
 
       - name: Run PHPUnit Tests
         #run: vendor/bin/phpunit
-        run: vendor/bin/phpunit --configuration phpunit.xml tests/
+        run: vendor/bin/phpunit --configuration phpunit tests/
         working-directory: ./php/
