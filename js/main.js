@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log("Inizializzo calendario prenotazione...");
 
-        const fasceOrarie = ["19:00", "19:30", "20:00", "20:30", "21:00"]; // Orari di prenotazione disponibili
+        const fasceOrarie = ["12.30", "13:30", "19:00", "19:30", "20:00", "20:30", "21:00"]; // Orari di prenotazione disponibili
 
         const oggi = new Date(); // Data corrente
         const annoIniziale = oggi.getFullYear();
