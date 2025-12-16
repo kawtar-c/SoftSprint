@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../class/Prenotazione.php'; 
+require_once __DIR__ . '/../class/Prenotazione.php';
 
 class PrenotazioneTest extends TestCase
 {
@@ -37,22 +37,19 @@ class PrenotazioneTest extends TestCase
         $stmtMock->expects($this->once())
                  ->method('execute')
                  ->willReturn(true);
-
-       
-        $stmtMock->expects($this->any()) 
+        
+        $stmtMock->expects($this->once())
                  ->method('close');
 
         $prenotazione = $this->getMockBuilder(Prenotazione::class)
                              ->disableOriginalConstructor()
                              ->getMock();
 
-        
         $reflection = new ReflectionClass(Prenotazione::class);
         $property = $reflection->getProperty('db');
         $property->setAccessible(true);
         $property->setValue($prenotazione, $dbMock);
 
-        // 7. Esecuzione del test
         $result = $prenotazione->aggiungiPrenotazione(
             "Mario",
             "333444555",
@@ -61,10 +58,8 @@ class PrenotazioneTest extends TestCase
             "20:00"
         );
 
-        // 8. Assert
         $this->assertTrue($result);
     }
-
 
     public function testGetPrenotazioni()
     {
@@ -127,7 +122,7 @@ class PrenotazioneTest extends TestCase
                   ->method('execute')
                   ->willReturn(true);
         
-        $stmtMock->expects($this->any())
+        $stmtMock->expects($this->once())
                  ->method('close');
 
         $prenotazione = $this->getMockBuilder(Prenotazione::class)
@@ -169,8 +164,8 @@ class PrenotazioneTest extends TestCase
                       "2025-02-10",
                       3,
                       "20:00",
-                      5,  
-                      7   
+                      5,
+                      7
                   )
                   ->willReturn(true);
 
@@ -178,7 +173,7 @@ class PrenotazioneTest extends TestCase
                   ->method('execute')
                   ->willReturn(true);
         
-        $stmtMock->expects($this->any())
+        $stmtMock->expects($this->once())
                  ->method('close');
 
 
