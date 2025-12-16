@@ -31,9 +31,7 @@ class Prenotazione {
     }
 
     // Aggiungi prenotazione
-    public function aggiungiPrenotazione(string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {
-        $stmt = $this->db->prepare("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)");
-        // USIAMO IL WRAPPER QUI
+    public function aggiungiPrenotazione(string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {        $stmt = $this->db->prepare("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)");
         $resBind = $this->preparaStatement($stmt, $nome, $telefono, $data, $persone, $fascia_oraria);
         if (!$resBind) return false;
 
