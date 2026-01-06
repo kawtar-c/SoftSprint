@@ -32,4 +32,14 @@ class Tavolo {
         $result = $stmt->get_result()->fetch_assoc();
         return $result["stato"] ?? null;
     }
+
+    // Ottieni Capacita
+    public function setCapacitaMassima(int $idTavolo, int $capacita): bool {
+       if ($capacita <= 0) return false;
+    
+       $query = "UPDATE tavolo SET capacita_max = ? WHERE id_tavolo = ?";
+       $stmt = $this->db->prepare($query);
+       $stmt->bind_param("ii", $capacita, $idTavolo);
+       return $stmt->execute();
+    }
 }

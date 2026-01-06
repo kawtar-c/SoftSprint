@@ -3,6 +3,7 @@ require_once "../php/includes/header.php";
 require_once "../php/class/Piatto.php";
 require_once "../php/class/Utente.php";
 require_once "../php/includes/session.php";
+require_once "../php/class/Tavolo.php";
 
 if (!isset($_SESSION['user_id']) || $_SESSION['ruolo'] !== 'admin') {
     header("Location: login.php");
@@ -14,6 +15,21 @@ $utenti = $utente->getUtenti();
 
 $piatto = new Piatto();
 $menu = $piatto->getMenu(); 
+
+$tavoloObj = new Tavolo();
+$tavoli = $tavoloObj->getTavoli();
+
+if (isset($_POST['salva_capacita'])) {
+    $idTavolo = intval($_POST['id_tavolo']);
+    $capacita = intval($_POST['capacita_max']);
+
+    $tavoloObj->setCapacitaMassima($idTavolo, $capacita);
+
+    header("Location: admin.php");
+    exit;
+}
+
+
 
 $piattiPerCategoria = [];
 foreach ($menu as $p) {
@@ -78,6 +94,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
+
+    if (isset($_POST['salva_capacita'])) {
+    $idTavolo = intval($_POST['id_tavolo']);
+    $capacita = intval($_POST['capacita_max']);
+    
+    $tavoloObj = new Tavolo(); 
+    $tavoloObj->setCapacitaMassima($idTavolo, $capacita); // Chiama il metodo creato prima
+    
+    header("Location: admin.php");
+    exit;
+    }
 }
 $header = new Header();
 echo $header->render('user');
@@ -85,12 +112,36 @@ echo $header->render('user');
 
 <!-- TAB BAR CENTRALE -->
 <div class="tab-container">
-  
+    <button class="tab-btn" data-tab="tavoli">Gestione Tavoli</button>
     <button class="tab-btn <?php echo (!$piattoDaModificare && !$utenteDaModificare) ? 'active' : ''; ?>" data-tab="menu">Gestione Menu</button>
     <button class="tab-btn" data-tab="Statistiche">Statistiche</button>
     <button class="tab-btn" data-tab="Pagamenti">Pagamenti</button>
     <button class="tab-btn" data-tab="account">Account</button>
 </div>
+
+<div id="tavoli" class="tab-content ">
+    <h2>Gestione Tavoli</h2>
+
+    <?php foreach ($tavoli as $t): ?>
+        <form method="POST" style="margin-bottom: 10px;">
+           <input type="hidden" name="id_tavolo" value="<?= $t['id_tavolo'] ?>">
+
+            Tavolo <?= $t['numero'] ?> —
+            Capacità:
+            <input type="number"
+                name="capacita_max"
+                value="<?= $t['capacita_max'] ?>"
+                min="1"
+                required>
+
+            <button type="submit" name="salva_capacita">
+                Salva
+            </button>
+        </form>
+
+    <?php endforeach; ?>
+</div>
+
 
 <main class="container">
 
