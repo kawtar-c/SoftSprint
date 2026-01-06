@@ -18,5 +18,5 @@ jobs:
           php-version: '8.1'
 
       - name: Check PHP syntax
-        run: |
-          find . -name "*.php" -print0 | xargs -0 -n1 php -l
+  run: |
+    find . -name "*.php" ! -path "./vendor/*" -print0 | xargs -0 -n1 php -l
