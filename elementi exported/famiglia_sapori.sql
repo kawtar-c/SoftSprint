@@ -131,7 +131,8 @@ INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_orari
 
 CREATE TABLE `tavolo` (
   `id_tavolo` int(11) NOT NULL,
-  `numero` int(11) NOT NULL
+  `numero` int(11) NOT NULL,
+  `capacita_max` int(11) NOT NULL DEFAULT 2
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
