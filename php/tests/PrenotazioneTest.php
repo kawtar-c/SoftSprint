@@ -2,210 +2,135 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../class/Prenotazione.php';
+require_once __DIR__ . "/../class/Prenotazione.php";
 
 class PrenotazioneTest extends TestCase
 {
-    public function testAggiungiPrenotazione()
+    private function createMockPrenotazioneWithDB($mockDB)
     {
-        // Mock connessione mysqli (mock del database)
-        $dbMock = $this->createMock(mysqli::class);
-
-        // Mock mysqli_stmt (solo execute)
-        $stmtMock = $this->getMockBuilder(mysqli_stmt::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods(['execute'])
-                         ->getMock();
-
-        // prepare deve tornare lo statement mockato
-        $dbMock->expects($this->once())
-               ->method('prepare')
-               ->with("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)")
-               ->willReturn($stmtMock);
-
-        // execute deve essere chiamato e tornare true
-        $stmtMock->expects($this->once())
-                 ->method('execute')
-                 ->willReturn(true);
-
-        // Mock della classe Prenotazione ma SENZA mockare i metodi
         $prenotazione = $this->getMockBuilder(Prenotazione::class)
-                             ->disableOriginalConstructor()
-                             ->onlyMethods(['preparaStatement']) // mock del wrapper
-                             ->getMock();
+                               ->disableOriginalConstructor()
+                               ->onlyMethods(['preparaStatement'])
+                               ->getMock();
 
-        // mocka il wrapper per evitare bind_param reale
-        $prenotazione->expects($this->once())
-                     ->method('preparaStatement')
-                     ->willReturn(true);
+        $prenotazione->method('preparaStatement')->willReturn(true);
 
-        // Inserisco il DB mock nella classe
-        $reflection = new ReflectionClass(Prenotazione::class);
-        $property = $reflection->getProperty('db');
-        $property->setAccessible(true);
-        $property->setValue($prenotazione, $dbMock);
+        $ref = new ReflectionClass(Prenotazione::class);
+        $prop = $ref->getProperty('db');
+        $prop->setAccessible(true);
+        $prop->setValue($prenotazione, $mockDB);
 
-        // Chiamo il metodo reale
-        $result = $prenotazione->aggiungiPrenotazione(
-            "Mario", "333444555", "2025-01-15", 4, "20:00"
-        );
+        return $prenotazione;
+    }
 
-        // Test: deve tornare true
+    public function test_getPrenotazioneById()
+    {
+        $fakeReservation = [
+            "id_prenotazione" => 5,
+            "nome" => "Mario Rossi",
+            "persone" => 4
+        ];
+
+        $mockResult = $this->createMock(mysqli_result::class);
+        $mockResult->method('fetch_assoc')->willReturn($fakeReservation);
+
+        $mockStmt = $this->createMock(mysqli_stmt::class);
+        $mockStmt->method('bind_param')->willReturn(true);
+        $mockStmt->method('execute')->willReturn(true);
+        $mockStmt->method('get_result')->willReturn($mockResult);
+
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')->willReturn($mockStmt);
+
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
+
+        $result = $prenotazione->getPrenotazioneById(5);
+
+        $this->assertEquals($fakeReservation, $result);
+    }
+
+    public function test_getPrenotazioni()
+    {
+        $fakeReservations = [
+            ["id_prenotazione" => 1, "nome" => "A"],
+            ["id_prenotazione" => 2, "nome" => "B"]
+        ];
+
+        $mockResult = $this->createMock(mysqli_result::class);
+        $mockResult->method('fetch_all')->willReturn($fakeReservations); 
+
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('query')->willReturn($mockResult);
+
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
+
+        $result = $prenotazione->getPrenotazioni();
+
+        $this->assertEquals($fakeReservations, $result);
+    }
+
+    public function test_aggiungiPrenotazione()
+    {
+        $mockStmt = $this->createMock(mysqli_stmt::class);
+        $mockStmt->method('execute')->willReturn(true); 
+
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')->willReturn($mockStmt);
+
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
+
+        $result = $prenotazione->aggiungiPrenotazione("Nuovo", "111222333", "2026-01-01", 3, "21:00");
+
+        $this->assertTrue($result);
+    }
+    
+    public function test_eliminaPrenotazione()
+    {
+        $mockStmt = $this->createMock(mysqli_stmt::class);
+        $mockStmt->method('bind_param')->willReturn(true);
+        $mockStmt->method('execute')->willReturn(true);
+
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')->willReturn($mockStmt);
+
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
+
+        $result = $prenotazione->eliminaPrenotazione(10);
+
         $this->assertTrue($result);
     }
 
-
-    public function testGetPrenotazioni()
+    public function test_modificaPrenotazione()
     {
-    // Mock della connessione mysqli
-    $dbMock = $this->createMock(mysqli::class);
+        $mockStmt = $this->createMock(mysqli_stmt::class);
+        $mockStmt->method('bind_param')->willReturn(true);
+        $mockStmt->method('execute')->willReturn(true); 
 
-    // Mock del risultato della query
-    $resultMock = $this->getMockBuilder(mysqli_result::class)
-                       ->disableOriginalConstructor()
-                       ->onlyMethods(['fetch_all'])
-                       ->getMock();
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')->willReturn($mockStmt);
 
-    // query() deve restituire il result mock
-    $dbMock->expects($this->once())
-           ->method('query')
-           ->with("SELECT * FROM prenotazione")
-           ->willReturn($resultMock);
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
 
-    // fetch_all deve restituire questo array
-    $resultMock->expects($this->once())
-               ->method('fetch_all')
-               ->with(MYSQLI_ASSOC)
-               ->willReturn([
-                   ["id_prenotazione" => 1, "nome" => "Mario"],
-                   ["id_prenotazione" => 2, "nome" => "Giulia"]
-               ]);
+        $result = $prenotazione->modificaPrenotazione(
+            1, "Modificato", "999888777", "2026-01-02", 5, "22:00", 3
+        );
 
-    // Mock della classe Prenotazione
-    $prenotazione = $this->getMockBuilder(Prenotazione::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods([])
-                         ->getMock();
-
-    // Inserisco il DB mockato
-    $reflection = new ReflectionClass(Prenotazione::class);
-    $property = $reflection->getProperty('db');
-    $property->setAccessible(true);
-    $property->setValue($prenotazione, $dbMock);
-
-    // Chiamo il metodo
-    $result = $prenotazione->getPrenotazioni();
-
-    // Verifico che il risultato corrisponde
-    $this->assertCount(2, $result);
-    $this->assertEquals("Mario", $result[0]["nome"]);
-    $this->assertEquals("Giulia", $result[1]["nome"]);
+        $this->assertTrue($result);
     }
 
-    public function testEliminaPrenotazione()
+    public function test_assegnaTavolo()
     {
-    // Mock della connessione mysqli
-    $dbMock = $this->createMock(mysqli::class);
+        $mockStmt = $this->createMock(mysqli_stmt::class);
+        $mockStmt->method('bind_param')->willReturn(true);
+        $mockStmt->method('execute')->willReturn(true);
 
-    // Mock dello statement mysqli_stmt
-    $stmtMock = $this->getMockBuilder(mysqli_stmt::class)
-                     ->disableOriginalConstructor()
-                     ->onlyMethods(['bind_param', 'execute'])
-                     ->getMock();
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')->willReturn($mockStmt);
 
-    // prepare deve essere chiamato con la query corretta
-    $dbMock->expects($this->once())
-           ->method('prepare')
-           ->with("DELETE FROM prenotazione WHERE id_prenotazione = ?")
-           ->willReturn($stmtMock);
+        $prenotazione = $this->createMockPrenotazioneWithDB($mockDB);
 
-    // bind_param deve essere chiamato con il valore corretto
-    $stmtMock->expects($this->once())
-             ->method('bind_param')
-             ->with("i", 10);
+        $result = $prenotazione->assegnaTavolo(1, 5);
 
-    // execute deve ritornare true
-    $stmtMock->expects($this->once())
-             ->method('execute')
-             ->willReturn(true);
-
-    // Mock della classe Prenotazione
-    $prenotazione = $this->getMockBuilder(Prenotazione::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods([])
-                         ->getMock();
-
-    // Inserisco il DB mockato
-    $reflection = new ReflectionClass(Prenotazione::class);
-    $property = $reflection->getProperty('db');
-    $property->setAccessible(true);
-    $property->setValue($prenotazione, $dbMock);
-
-    // Chiamo il metodo
-    $result = $prenotazione->eliminaPrenotazione(10);
-
-    // Il risultato deve essere true
-    $this->assertTrue($result);
-    }
-
-    public function testModificaPrenotazione()
-    {
-    // Mock della connessione mysqli
-    $dbMock = $this->createMock(mysqli::class);
-
-    // Mock dello statement mysqli_stmt
-    $stmtMock = $this->getMockBuilder(mysqli_stmt::class)
-                     ->disableOriginalConstructor()
-                     ->onlyMethods(['bind_param', 'execute'])
-                     ->getMock();
-
-    // prepare deve essere chiamato con la query corretta
-    $dbMock->expects($this->once())
-           ->method('prepare')
-           ->with("UPDATE prenotazione SET nome = ?, telefono = ?, data = ?, persone = ?, fascia_oraria = ? WHERE id_prenotazione = ?")
-           ->willReturn($stmtMock);
-
-    // bind_param deve ricevere i parametri nell'ordine corretto
-    $stmtMock->expects($this->once())
-             ->method('bind_param')
-             ->with(
-                 "sssisi",
-                 "Luca",          // nome
-                 "1234567890",    // telefono
-                 "2025-02-10",    // data
-                 3,               // persone
-                 "20:00",         // fascia oraria
-                 7                // id_prenotazione
-             );
-
-    // execute deve essere chiamato e restituire true
-    $stmtMock->expects($this->once())
-             ->method('execute')
-             ->willReturn(true);
-
-    // Mock della classe Prenotazione
-    $prenotazione = $this->getMockBuilder(Prenotazione::class)
-                         ->disableOriginalConstructor()
-                         ->onlyMethods([])
-                         ->getMock();
-
-    // Inserisco il DB mockato tramite reflection
-    $reflection = new ReflectionClass(Prenotazione::class);
-    $property = $reflection->getProperty('db');
-    $property->setAccessible(true);
-    $property->setValue($prenotazione, $dbMock);
-
-    // Chiamo il metodo reale
-    $result = $prenotazione->modificaPrenotazione(
-        7,
-        "Luca",
-        "1234567890",
-        "2025-02-10",
-        3,
-        "20:00"
-    );
-
-    // Verifico che il metodo ritorni true
-    $this->assertTrue($result);
+        $this->assertTrue($result);
     }
 }

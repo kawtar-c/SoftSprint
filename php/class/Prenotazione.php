@@ -31,9 +31,7 @@ class Prenotazione {
     }
 
     // Aggiungi prenotazione
-    public function aggiungiPrenotazione(string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {
-        $stmt = $this->db->prepare("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)");
-        // USIAMO IL WRAPPER QUI
+    public function aggiungiPrenotazione(string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {        $stmt = $this->db->prepare("INSERT INTO prenotazione (nome, telefono, data, persone, fascia_oraria) VALUES (?, ?, ?, ?, ?)");
         $resBind = $this->preparaStatement($stmt, $nome, $telefono, $data, $persone, $fascia_oraria);
         if (!$resBind) return false;
 
@@ -48,9 +46,9 @@ class Prenotazione {
     }
 
     // Modifica prenotazione
-    public function modificaPrenotazione(int $id_prenotazione, string $nome, string $telefono, string $data, int $persone, string $fascia_oraria): bool {
-        $stmt = $this->db->prepare("UPDATE prenotazione SET nome = ?, telefono = ?, data = ?, persone = ?, fascia_oraria = ? WHERE id_prenotazione = ?");
-        $stmt->bind_param("sssisi", $nome, $telefono, $data, $persone, $fascia_oraria, $id_prenotazione);
+    public function modificaPrenotazione(int $id_prenotazione, string $nome, string $telefono, string $data, int $persone, string $fascia_oraria, int $id_tavolo): bool {
+        $stmt = $this->db->prepare("UPDATE prenotazione SET nome = ?, telefono = ?, data = ?, persone = ?, fascia_oraria = ?, id_tavolo = ? WHERE id_prenotazione = ?;");
+        $stmt->bind_param("sssisii", $nome, $telefono, $data, $persone, $fascia_oraria, $id_tavolo, $id_prenotazione);
         return $stmt->execute();
     }
 
