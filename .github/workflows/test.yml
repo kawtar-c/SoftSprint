@@ -2,6 +2,8 @@ name: PHP CI
 
 on:
   push:
+    paths:
+      - index.php
 
 jobs:
   php-check:
