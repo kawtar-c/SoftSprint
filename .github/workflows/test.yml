@@ -1,4 +1,4 @@
-name: Index PHP Validation
+name: PHP CI
 
 on:
   push:
