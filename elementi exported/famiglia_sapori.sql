@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Dic 08, 2025 alle 19:14
+-- Creato il: Gen 07, 2026 alle 21:13
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -31,21 +31,20 @@ CREATE TABLE `ordine` (
   `id_ordine` int(11) NOT NULL,
   `id_tavolo` int(11) NOT NULL,
   `data_ora` datetime NOT NULL,
-  `stato` enum('inviato','in preparazione','pronto') NOT NULL,
+  `stato` enum('inviato','in preparazione','pronto','completato') NOT NULL,
   `id_utente` int(11) DEFAULT NULL,
-  `note` varchar(255) DEFAULT NULL
+  `note` varchar(255) DEFAULT NULL,
+  `totale` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `ordine`
 --
 
-INSERT INTO `ordine` (`id_ordine`, `id_tavolo`, `data_ora`, `stato`, `id_utente`, `note`) VALUES
-(117, 1, '2025-11-27 14:53:08', 'in preparazione', 1, ''),
-(118, 2, '2025-11-28 12:28:37', 'pronto', 1, ''),
-(119, 3, '2025-12-07 15:12:02', 'inviato', 1, ''),
-(120, 3, '2025-12-07 15:12:02', 'inviato', 1, ''),
-(121, 3, '2025-12-07 15:12:09', 'inviato', 1, '');
+INSERT INTO `ordine` (`id_ordine`, `id_tavolo`, `data_ora`, `stato`, `id_utente`, `note`, `totale`) VALUES
+(123, 1, '2026-01-07 20:55:58', 'completato', 1, '', 65),
+(124, 1, '2026-01-07 20:56:46', 'completato', 1, '', 27),
+(125, 3, '2026-01-07 20:57:03', 'completato', 1, '', 46);
 
 -- --------------------------------------------------------
 
@@ -65,11 +64,14 @@ CREATE TABLE `ordine_piatto` (
 --
 
 INSERT INTO `ordine_piatto` (`id_ordine_piatto`, `id_ordine`, `id_piatto`, `quantita`) VALUES
-(14, 117, 6, 2),
-(15, 118, 10, 3),
-(16, 119, 14, 3),
-(17, 120, 6, 2),
-(18, 121, 14, 3);
+(20, 123, 6, 1),
+(21, 123, 9, 1),
+(22, 123, 12, 1),
+(23, 124, 11, 1),
+(24, 124, 9, 2),
+(25, 124, 14, 1),
+(26, 125, 7, 2),
+(27, 125, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -98,8 +100,7 @@ INSERT INTO `piatto` (`id_piatto`, `nome`, `prezzo`, `categoria`, `img`, `descri
 (10, 'Arrosticini', 10, 'Secondi', 'https://i.pinimg.com/1200x/0f/d4/ba/0fd4bad4d4cd26fa5c514b6316da80a0.jpg', 'Spiedini tradizionali di pecora cotti alla brace, serviti con pane e olio abruzzese.'),
 (11, 'Pecora alla callara', 12, 'Secondi', 'https://i.pinimg.com/1200x/98/7c/0f/987c0f6c768ac35589b8159fa5634411.jpg', 'Carne di pecora cotta lentamente in pentola con patate, aromi di montagna e spezie tradizionali.'),
 (12, 'Pizza dolce abruzzese', 50, 'Dolci', 'https://i.pinimg.com/1200x/b3/ef/19/b3ef19d619f645b50a480df3314bd081.jpg', 'Dolce tradizionale a strati con pan di Spagna, alchermes, crema, cioccolato e decorazioni di mandorle.'),
-(13, 'Bocconotti teramani', 50, 'Dolci', 'https://i.pinimg.com/1200x/2c/cf/cb/2ccfcb40536564326c424e2fd1b62401.jpg', 'Dolcetti di frolla ripieni di cacao, mandorle e mosto cotto, tipici del teramano.'),
-(14, 'Ferratelle', 50, 'Dolci', 'https://i.pinimg.com/736x/c3/e8/d7/c3e8d71106a55c6d7969e0fe1553a56d.jpg', 'Cialde sottili profumate al limone o anice, cotte sull’antico ferro abruzzese.');
+(14, 'Ferratelle', 5, 'Dolci', 'https://i.pinimg.com/736x/c3/e8/d7/c3e8d71106a55c6d7969e0fe1553a56d.jpg', 'Cialde sottili profumate al limone o anice, cotte sull’antico ferro abruzzese.');
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,11 @@ CREATE TABLE `prenotazione` (
 --
 
 INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_oraria`, `id_prenotazione`) VALUES
-('mario', '3', '2025-12-16', 3, '19:30', 1);
+('mario', '3', '2025-12-16', 3, '19:30', 1),
+('mario', '3', '2025-12-16', 8, '20:30', 2),
+('mario', '3', '2025-12-16', 3, '20:30', 3),
+('mario', '3', '2025-12-16', 3, '12:00', 4),
+('mario', '10', '2025-12-16', 10, '14:00', 5);
 
 -- --------------------------------------------------------
 
@@ -132,17 +137,18 @@ INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_orari
 CREATE TABLE `tavolo` (
   `id_tavolo` int(11) NOT NULL,
   `numero` int(11) NOT NULL,
-  `capacita_max` int(11) NOT NULL DEFAULT 2
+  `capacita_max` int(11) NOT NULL DEFAULT 2,
+  `stato` enum('libero','prenotato') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `tavolo`
 --
 
-INSERT INTO `tavolo` (`id_tavolo`, `numero`) VALUES
-(1, 1),
-(2, 2),
-(3, 3);
+INSERT INTO `tavolo` (`id_tavolo`, `numero`, `capacita_max`, `stato`) VALUES
+(1, 1, 2, 'libero'),
+(2, 2, 2, 'libero'),
+(3, 3, 2, 'libero');
 
 -- --------------------------------------------------------
 
@@ -220,13 +226,13 @@ ALTER TABLE `utente`
 -- AUTO_INCREMENT per la tabella `ordine`
 --
 ALTER TABLE `ordine`
-  MODIFY `id_ordine` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `id_ordine` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT per la tabella `ordine_piatto`
 --
 ALTER TABLE `ordine_piatto`
-  MODIFY `id_ordine_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_ordine_piatto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT per la tabella `piatto`
@@ -238,13 +244,13 @@ ALTER TABLE `piatto`
 -- AUTO_INCREMENT per la tabella `prenotazione`
 --
 ALTER TABLE `prenotazione`
-  MODIFY `id_prenotazione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_prenotazione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT per la tabella `tavolo`
 --
 ALTER TABLE `tavolo`
-  MODIFY `id_tavolo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_tavolo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT per la tabella `utente`

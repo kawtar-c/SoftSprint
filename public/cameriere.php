@@ -83,6 +83,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pre=$pre->aggiungiPrenotazione($nome, $telefono, $data, $persone, $ora);
         header("Location: " . $_SERVER['PHP_SELF'] . "#GestioneSalaContainer");
         exit;
+    } elseif (isset($_POST['chiudi_ordine'])) {
+        $id_tavolo_chiusura = intval($_POST['id_tavolo_chiusura'] ?? 0);
+        $totale_finale = floatval($_POST['totale_finale'] ?? 0.0);
+
+        if ($id_tavolo_chiusura > 0) {
+            $id_ordine=$ordine->getIdOrdinedaTavolo($id_tavolo_chiusura);
+            $ordine->chiudiOrdine($id_ordine, $totale_finale);
+            $tavoloObj->setStato($id_tavolo_chiusura, 'libero');
+        }
+
+        header("Location: " . $_SERVER['PHP_SELF'] . ($id_tavolo > 0 ? "?tavolo=" . $id_tavolo : ''));
+        exit;
     }
 }
 ?>
@@ -172,15 +184,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <textarea id="note-cucina" rows="3" placeholder="Es. senza sale, più cottura..."></textarea>
             </div>
 
-            <div class="order-footer">
+            <div class="order-footer" style="margin-top: 15px; flex-direction: column;">
                 <div class="order-total">
                     <span>Totale stimato</span>
-                    <strong id="order-total">0 €</strong>
+                    <strong id="order-total">0,00 €</strong>
                 </div>
 
-                <div class="order-actions">
-                    <button class="btn-secondary" id="btn-svuota">Svuota</button>
-                    <button class="btn-primary" id="btn-invia">Invia in cucina</button>
+                <div class="order-actions" style="margin-top: 10px; width: 100%;">
+                    <button class="btn-secondary" id="btn-svuota" style="width: 50%;">Svuota</button>
+                    <button class="btn-primary" id="btn-invia" style="width: 50%;">Invia in cucina</button>
+                </div>
+
+                <div style="margin-top: 15px; width: 100%;">
+                    <form action="cameriere.php" method="post" id="form-chiudi-ordine">
+                        <input type="hidden" name="id_tavolo_chiusura" value="<?= $id_tavolo ?>">
+                        <input type="hidden" name="totale_finale" id="input-totale-finale" value="0">
+                        
+                        <button type="submit" name="chiudi_ordine" class="btn-primary" 
+                                style="width: 100%;"
+                                onclick="preparaChiusura(event)">
+                        Chiudi Ordine e Incassa
+                        </button>
+                    </form>
                 </div>
             </div>
         </aside>
@@ -372,6 +397,20 @@ document.addEventListener("click", (event) => {
         }
     });
 });
+
+function preparaChiusura(event) {
+    const totaleTesto = document.getElementById('order-total').innerText;
+
+    const totaleNumerico = totaleTesto.replace('€', '').replace('.', '').replace(',', '.').trim();
+
+    document.getElementById('input-totale-finale').value = totaleNumerico;
+    
+    if (parseFloat(totaleNumerico) <= 0) {
+        if (!confirm("Il totale è 0,00 €. Vuoi chiudere comunque l'ordine?")) {
+            event.preventDefault();
+        }
+    }
+}
 </script>
 
 </body>

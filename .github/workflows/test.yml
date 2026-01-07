@@ -1,17 +1,33 @@
-name: PHP CI
+name: PHP CI & Test (PHPUnit)
 
 on:
   push:
+    branches: ["main"] 
+  pull_request:
+    branches: ["main"]
+
 
 jobs:
-  php-check:
+  test_php:
     runs-on: ubuntu-latest
+   
+    strategy:
+      matrix:
+        php-version: ['8.2']
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP (version ${{ matrix.php-version }})
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Run PHPUnit Tests
+        run: vendor/bin/phpunit --configuration phpunit.xml tests/
+        working-directory: ./php/

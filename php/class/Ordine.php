@@ -39,6 +39,25 @@ class Ordine {
         return (int)$idOrdine;
     }
 
+    // Ottieni ordine
+    public function getIdOrdinedaTavolo(int $idTavolo): ?int {
+        $sql = "SELECT id_ordine FROM ordine WHERE id_tavolo = ? ORDER BY data_ora DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $idTavolo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row ? (int)$row['id_ordine'] : null;
+    }
+
+    // Chiusura ordine
+    public function chiudiOrdine(int $idOrdine, float $totale): bool {
+        $sql = "UPDATE ordine SET stato = 'completato', totale = ? WHERE id_ordine = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("di", $totale, $idOrdine);
+        return $stmt->execute();
+    }
+
     // Ritorna tutti gli ordini non conclusi
     public function getOrdiniAttivi(): array {
         $sql = "SELECT * FROM ordine WHERE stato != 'completato' ORDER BY data_ora ASC";
@@ -56,7 +75,7 @@ class Ordine {
 
     // Carica piatti
     public function getPiattiDaOrdine(int $idTavolo): array {
-        $sql = "SELECT id_ordine FROM ordine WHERE id_tavolo = ?  ORDER BY data_ora DESC LIMIT 1";
+        $sql = "SELECT id_ordine FROM ordine WHERE id_tavolo = ? and stato != 'completato' ORDER BY data_ora DESC LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $idTavolo);
         $stmt->execute();

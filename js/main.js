@@ -409,12 +409,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .catch(err => console.error("Errore polling ordini:", err));
-    }, 10000000000000); // Intervallo di 10 secondi
+    }, 100000); // Intervallo di 10 secondi
 
 
 
     // Gestione delle schermate
-    const tabButtons = document.querySelectorAll(".tab-btn, #addDishBtn, #addUsrBtn");
+    const tabButtons = document.querySelectorAll(".tab-btn, #addDishBtn, #addUsrBtn, #modificaUsrBtn, #modificaDishBtn");
     const tabContents = document.querySelectorAll(".tab-content, #addDish, #addUsr");
 
     tabButtons.forEach(btn => {
