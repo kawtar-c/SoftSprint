@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Gen 07, 2026 alle 21:13
+-- Creato il: Gen 08, 2026 alle 10:11
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -114,19 +114,20 @@ CREATE TABLE `prenotazione` (
   `data` varchar(255) DEFAULT NULL,
   `persone` int(11) DEFAULT NULL,
   `fascia_oraria` varchar(255) DEFAULT NULL,
-  `id_prenotazione` int(11) NOT NULL
+  `id_prenotazione` int(11) NOT NULL,
+  `id_tavolo` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `prenotazione`
 --
 
-INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_oraria`, `id_prenotazione`) VALUES
-('mario', '3', '2025-12-16', 3, '19:30', 1),
-('mario', '3', '2025-12-16', 8, '20:30', 2),
-('mario', '3', '2025-12-16', 3, '20:30', 3),
-('mario', '3', '2025-12-16', 3, '12:00', 4),
-('mario', '10', '2025-12-16', 10, '14:00', 5);
+INSERT INTO `prenotazione` (`nome`, `telefono`, `data`, `persone`, `fascia_oraria`, `id_prenotazione`, `id_tavolo`) VALUES
+('mario', '3', '2025-12-16', 3, '19:30', 1, NULL),
+('mario', '3', '2025-12-16', 8, '20:30', 2, NULL),
+('mario', '3', '2025-12-16', 3, '20:30', 3, NULL),
+('mario', '3', '2025-12-16', 3, '12:00', 4, NULL),
+('mario', '10', '2025-12-16', 10, '14:00', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -204,7 +205,8 @@ ALTER TABLE `piatto`
 -- Indici per le tabelle `prenotazione`
 --
 ALTER TABLE `prenotazione`
-  ADD PRIMARY KEY (`id_prenotazione`);
+  ADD PRIMARY KEY (`id_prenotazione`),
+  ADD KEY `fk_tavolo` (`id_tavolo`);
 
 --
 -- Indici per le tabelle `tavolo`
@@ -275,6 +277,12 @@ ALTER TABLE `ordine`
 ALTER TABLE `ordine_piatto`
   ADD CONSTRAINT `ordine_piatto_ibfk_1` FOREIGN KEY (`id_ordine`) REFERENCES `ordine` (`id_ordine`),
   ADD CONSTRAINT `ordine_piatto_ibfk_2` FOREIGN KEY (`id_piatto`) REFERENCES `piatto` (`id_piatto`);
+
+--
+-- Limiti per la tabella `prenotazione`
+--
+ALTER TABLE `prenotazione`
+  ADD CONSTRAINT `fk_tavolo` FOREIGN KEY (`id_tavolo`) REFERENCES `tavolo` (`id_tavolo`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

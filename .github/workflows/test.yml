@@ -27,11 +27,6 @@ jobs:
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --ignore-platform-reqs
-        working-directory: ./php/
-
-      - name: Make PHPUnit executable
-        run: chmod +x vendor/bin/phpunit
-        working-directory: ./php/
 
       - name: Run PHPUnit Tests
         run: vendor/bin/phpunit --configuration phpunit.xml tests/
