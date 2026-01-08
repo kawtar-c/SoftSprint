@@ -84,6 +84,37 @@ class TavoloTest extends TestCase
 
         $this->assertEquals("libero", $stato);
     }
+
+    /** Test: setCapacitaMassima con capacita NON valida */
+     public function test_set_capacita_massima_non_valida()
+    {
+       $mockDB = $this->createMock(mysqli::class);
+       $tavolo = new Tavolo($mockDB);
+
+       $risultato = $tavolo->setCapacitaMassima(1, 0);
+
+       $this->assertFalse($risultato);
+    }
+
+    /** Test: setCapacitaMassima con capacita valida */
+    public function test_set_capacita_massima_valida()
+    {
+       // MOCK dello statement
+       $mockStmt = $this->createMock(mysqli_stmt::class);
+       $mockStmt->method('bind_param')->willReturn(true);
+       $mockStmt->method('execute')->willReturn(true);
+
+        // MOCK del DB
+        $mockDB = $this->createMock(mysqli::class);
+        $mockDB->method('prepare')
+           ->willReturn($mockStmt);
+
+        $tavolo = new Tavolo($mockDB);
+
+        $risultato = $tavolo->setCapacitaMassima(2, 4);
+
+        $this->assertTrue($risultato);
+    }
 }
 
 
